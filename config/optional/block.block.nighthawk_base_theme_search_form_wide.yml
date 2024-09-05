@@ -4,9 +4,9 @@ dependencies:
   module:
     - search
   theme:
-    - nighthawk_base
-id: nighthawk_base_search_form_wide
-theme: nighthawk_base
+    - nighthawk_base_theme
+id: nighthawk_base_theme_search_form_wide
+theme: nighthawk_base_theme
 region: top_header_form
 weight: -7
 provider: null

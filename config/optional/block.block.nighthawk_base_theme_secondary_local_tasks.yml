@@ -2,18 +2,18 @@ langcode: en
 status: true
 dependencies:
   theme:
-    - bootstrap_sass
-id: bootstrap_sass_primary_local_tasks
-theme: bootstrap_sass
+    - nighthawk_base_theme
+id: nighthawk_base_theme_secondary_local_tasks
+theme: nighthawk_base_theme
 region: content
-weight: -5
+weight: -4
 provider: null
 plugin: local_tasks_block
 settings:
   id: local_tasks_block
-  label: 'Primary tabs'
+  label: 'Secondary tabs'
   label_display: '0'
   provider: core
-  primary: true
-  secondary: false
+  primary: false
+  secondary: true
 visibility: {  }

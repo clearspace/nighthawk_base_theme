@@ -4,9 +4,9 @@ dependencies:
   module:
     - system
   theme:
-    - nighthawk_base
-id: nighthawk_base_messages
-theme: nighthawk_base
+    - nighthawk_base_theme
+id: nighthawk_base_theme_messages
+theme: nighthawk_base_theme
 region: highlighted
 weight: -6
 provider: null

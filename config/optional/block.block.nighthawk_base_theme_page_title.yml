@@ -2,9 +2,9 @@ langcode: en
 status: true
 dependencies:
   theme:
-    - nighthawk_base
-id: nighthawk_base_page_title
-theme: nighthawk_base
+    - nighthawk_base_theme
+id: nighthawk_base_theme_page_title
+theme: nighthawk_base_theme
 region: content
 weight: -7
 provider: null

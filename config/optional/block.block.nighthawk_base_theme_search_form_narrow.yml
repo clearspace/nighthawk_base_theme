@@ -4,9 +4,9 @@ dependencies:
   module:
     - search
   theme:
-    - bootstrap_sass
-id: bootstrap_sass_search_form_narrow
-theme: bootstrap_sass
+    - nighthawk_base_theme
+id: nighthawk_base_theme_search_form_narrow
+theme: nighthawk_base_theme
 region: sidebar_first
 weight: -7
 provider: null
