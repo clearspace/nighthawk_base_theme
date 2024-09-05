@@ -1,0 +1,38 @@
+<div class="four-columns{% if background_image_uri %} background-image{% endif %}{% if background_color %} background-{{ background_color }}{% endif %}{% if text_color %} text-{{ text_color }}{% endif %}"{% if background_image_uri %} style="{% if background_image_uri %}background-image: url({{ file_url(background_image_uri) }});{% endif %}"{% endif %}>
+  {% if parent.type.0.target_id != 'content_with_sidebar' %}<div class="container">{% endif %}
+    {% if h2_title %}
+      <h2 class="title">
+        {{ h2_title }}
+      </h2>
+    {% endif %}
+    <div class="row">
+      {% if stacking == "double" %}
+        <div class="col-6 col-lg-3">
+          {{ content._field_layout.content.field_column_1|render }}
+        </div>
+        <div class="col-6 col-lg-3">
+          {{ content._field_layout.content.field_column_2|render }}
+        </div>
+        <div class="col-6 col-lg-3">
+          {{ content._field_layout.content.field_column_3|render }}
+        </div>
+        <div class="col-6 col-lg-3">
+          {{ content._field_layout.content.field_column_3|render }}
+        </div>
+      {% elseif stacking == "single" %}
+        <div class="col-12 col-lg-3">
+          {{ content._field_layout.content.field_column_1|render }}
+        </div>
+        <div class="col-12 col-lg-3">
+          {{ content._field_layout.content.field_column_2|render }}
+        </div>
+        <div class="col-12 col-lg-3">
+          {{ content._field_layout.content.field_column_3|render }}
+        </div>
+        <div class="col-12 col-lg-3">
+          {{ content._field_layout.content.field_column_3|render }}
+        </div>
+      {% endif %}
+    </div>
+    {% if parent.type.0.target_id != 'content_with_sidebar' %}</div>{% endif %}
+</div>

@@ -1,0 +1,398 @@
+<?php
+
+/**
+ * @file
+ * Functions to support theming in the SASS Starterkit subtheme.
+ */
+
+use Drupal\Core\GeneratedLink;
+use Drupal\Core\Link;
+use Drupal\Core\Render\Markup;
+use Drupal\Core\Url;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\media\Entity\Media;
+use Drupal\file\Entity\File;
+use Drupal\taxonomy\Entity\Term;
+use Drupal\node\Entity\Node;
+use Drupal\block_content\BlockContentInterface;
+use Drupal\block_content\Entity\BlockContent;
+use Drupal\paragraphs\Entity\Paragraph;
+use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\image\Entity\ImageStyle; 
+
+/**
+ * Implements hook_form_system_theme_settings_alter() for settings form.
+ *
+ * Replace Barrio setting options with subtheme ones.
+ */
+function nighthawk_base_form_system_theme_settings_alter(&$form, FormStateInterface $form_state) {
+  $form['components']['navbar']['bootstrap_barrio_navbar_top_background']['#options'] = array(
+    'bg-primary' => t('Primary'),
+    'bg-secondary' => t('Secondary'),
+    'bg-light' => t('Light'),
+    'bg-dark' => t('Dark'),
+    'bg-white' => t('White'),
+    'bg-transparent' => t('Transparent'),
+  );
+  $form['components']['navbar']['bootstrap_barrio_navbar_background']['#options'] = array(
+    'bg-primary' => t('Primary'),
+    'bg-secondary' => t('Secondary'),
+    'bg-light' => t('Light'),
+    'bg-dark' => t('Dark'),
+    'bg-white' => t('White'),
+    'bg-transparent' => t('Transparent'),
+  );
+}
+
+/**
+ * Implements hook_preprocess_html().
+ */
+function nighthawk_base_preprocess_html(&$variables) { 
+  $current_path = \Drupal::service('path.current')->getPath();
+  $path_alias = \Drupal::service('path_alias.manager')->getAliasByPath($current_path);
+  $path_alias = ltrim($path_alias, '/');
+  $variables['attributes']['class'][] = 'path-' . \Drupal\Component\Utility\Html::cleanCssIdentifier($path_alias);
+
+  $node = \Drupal::routeMatch()->getParameter('node');
+  if (isset($node->field_page_type[0])) {
+    $variables['page_type'] = $node->get('field_page_type')->value;
+  }
+}
+
+function nighthawk_base_preprocess_page(&$variables) {
+  if (!empty($variables['node'])) {
+    
+    $variables['route_name'] = \Drupal::routeMatch()->getRouteName();
+
+    if ($node = \Drupal::routeMatch()->getParameter('node')) {
+      $suggestions[] = 'page__' . $node->bundle();
+    }
+    $node = $variables['node'];
+    if ($node->hasfield('field_body_title')) {
+      $variables['body_title'] = $node->field_body_title->value;
+    }  
+    if ($node->hasfield('body')) {
+      if (!empty($node->body->getValue()[0]['value'])) {
+        $variables['body'] = [     
+          '#type' => 'processed_text',     
+          '#text' => $node->body->getValue()[0]['value'],     
+          '#format' => $node->body->getValue()[0]['format']   
+        ];
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_alter() for contact form container.
+ */
+function nighthawk_base_theme_suggestions_container_alter(array &$suggestions, array &$variables) {
+  $name = '';
+  $type = '';
+  if (isset($variables['element']['#name'])) {
+    $name = $variables['element']['#name'];
+  }
+
+  if (isset($variables['element']['#type'])) {
+    $type = $variables['element']['#type'];
+  }
+
+  array_unshift($suggestions, 'container__' . $type . '__' . $name);
+}
+
+function nighthawk_base_preprocess_field(array &$variables, $hook) {
+ if ($node = \Drupal::request()->attributes->get('node')) {
+   $variables['nid'] = $node->id();
+ }
+}
+
+
+function nighthawk_base_preprocess_node(&$variables) {
+  $node = $variables['elements']['#node'];
+}
+
+function nighthawk_base_preprocess_paragraph(&$variables) {
+  $paragraph = $variables['elements']['#paragraph'];
+  $bundle = $paragraph->bundle();
+
+  //Get page title
+  $request = \Drupal::request();
+  $route_match = \Drupal::routeMatch();
+  $variables['title'] = \Drupal::service('title_resolver')->getTitle($request, $route_match->getRouteObject());
+
+  //NID
+  if (!empty(\Drupal::routeMatch()->getParameter('node'))) {
+    $node = \Drupal::routeMatch()->getParameter('node');
+    $variables['nid'] = $node->id();
+  }
+  //Get parent paragraph
+  $parent = $paragraph->getParentEntity(); 
+  
+  $variables['parent'] = $paragraph->getParentEntity(); 
+
+  if ($parent->hasfield('field_page_type')) {
+    $variables['page_type'] = $parent->get('field_page_type')->value;
+  }
+  
+  //Test to see if paragraph is on the front page
+  try {
+    $variables['is_front'] = \Drupal::service('path.matcher')->isFrontPage();
+  }
+  catch (Exception $e) {
+    $variables['is_front'] = FALSE;
+  }
+
+  //Beginning of universal paragraph fields
+  if ($paragraph->hasfield('field_subtitle')) {
+    $variables['subtitle'] = $paragraph->get('field_subtitle')->value;
+  }
+  if ($paragraph->hasfield('field_title')) {
+    $variables['title'] = $paragraph->get('field_title')->value;
+  }
+  if ($paragraph->hasfield('field_h2_title')) {
+    $variables['h2_title'] = $paragraph->get('field_h2_title')->value;
+  }
+  if ($paragraph->hasfield('field_h3_title')) {
+    $variables['h3_title'] = $paragraph->get('field_h3_title')->value;
+  }
+  if ($paragraph->hasfield('field_background_color')) {
+    if (!empty($paragraph->field_background_color->getValue()[0])) {
+      $variables['background_color'] = $paragraph->get('field_background_color')->getValue()[0]['value'];
+    }
+  }
+  if ($paragraph->hasfield('field_anchor_id')) {
+    $variables['anchor_id'] = $paragraph->get('field_anchor_id')->value;
+  }
+  if ($paragraph->hasfield('field_text_color')) {
+    $variables['text_color'] = $paragraph->get('field_text_color')->value;
+  }
+  if (isset($paragraph->field_image[0])) {
+    if (!empty($paragraph->field_image->getValue()[0])) {
+      $image = $paragraph->field_image->getValue()[0];
+      if (isset($image) && $image > 0) {
+        $media = Media::load($image['target_id']);
+        if (!empty($media)) {
+          $media_field = $media->get('field_media_image')->getValue()[0]; 
+          $alt = $media_field['alt'];
+          $file =  File::load($media_field['target_id']);
+          if ($file) {
+            $uri = $file->getFileUri();
+            $url = \Drupal::service('file_url_generator')->generateString($uri);
+            $variables['image_uri'] = $uri;
+            $variables['image_alt'] = $alt;
+          }
+        }
+      }
+    }
+  }
+  if ($paragraph->hasfield('field_section_text')) {
+    if (!empty($paragraph->field_section_text->getValue()[0]['value'])) {
+      $variables['section_text'] = [     
+        '#type' => 'processed_text',     
+        '#text' => $paragraph->field_section_text->getValue()[0]['value'],     
+        '#format' => $paragraph->field_section_text->getValue()[0]['format']   
+      ];
+    }
+  }
+  if ($paragraph->hasfield('field_text')) {
+    if (!empty($paragraph->field_text->getValue()[0]['value'])) {
+      $variables['text'] = [     
+        '#type' => 'processed_text',     
+        '#text' => $paragraph->field_text->getValue()[0]['value'],     
+      ];
+    }
+  }
+  if ($paragraph->hasfield('field_section_link')) { 
+    $links = $paragraph->get('field_section_link')->getValue();
+    if(!empty($links)) {
+      foreach($links as $id=>$link) {
+        $variables['section_link'][$id]['link_url'] = Url::fromUri($link['uri']);
+        $variables['section_link'][$id]['link_title'] = $link['title'];
+      }
+    }
+  }
+  if ($paragraph->hasfield('field_link')) {
+    $link = $paragraph->get('field_link')->getValue();
+    if(!empty($link)) {
+      $variables['paragraph_link'] = Url::fromUri($link[0]['uri']);
+      $variables['paragraph_link_title'] = $link[0]['title'];
+    }
+  }
+  if (isset($paragraph->field_background_image[0])) {
+    if (!empty($paragraph->field_background_image->getValue()[0])) {
+      $background_image = $paragraph->field_background_image->getValue()[0];
+      if (isset($background_image) && $background_image > 0) {
+        $media = Media::load($background_image['target_id']);
+        $media_field = $media->get('field_media_image')->first()->getValue(); 
+        $alt = $media_field['alt'];
+        $file =  File::load($media_field['target_id']);
+        if ($file) {
+          $uri = $file->getFileUri();
+          $url = \Drupal::service('file_url_generator')->generateString($uri);
+          $variables['background_image_uri'] = $uri;
+          $variables['background_image_alt'] = $alt;
+        }
+      }
+    }
+  }
+  if ($paragraph->hasfield('field_font_awesome_icon')) {
+    if (isset($paragraph->field_font_awesome_icon[0])) {
+      $variables['fa_icon'] = $paragraph->get('field_font_awesome_icon')->getValue()[0]['icon_name'];
+      $variables['fa_style'] = $paragraph->get('field_font_awesome_icon')->getValue()[0]['style'];
+    }
+  } 
+  //Hero fields
+  if ($bundle === 'hero' ) {
+
+    if ($paragraph->hasfield('field_h1_title')) {
+      $variables['h1_title'] = $paragraph->get('field_h1_title')->value;
+    }
+    if ($paragraph->hasfield('field_h1_second_line')) {
+      $variables['h1_second_line'] = $paragraph->get('field_h1_second_line')->value;
+    }
+    if ($paragraph->hasfield('field_hero_centered')) {
+      $variables['hero_centered'] = $paragraph->get('field_hero_centered')->value;
+    }
+    if ($paragraph->hasfield('field_centered_buttons')) {
+      $variables['centered_buttons'] = $paragraph->get('field_centered_buttons')->value;
+    }
+    if ($paragraph->hasfield('field_hero_link_subtext')) {
+      $variables['hero_link_subtext'] = $paragraph->get('field_hero_link_subtext')->value;
+    }
+    if ($paragraph->hasfield('field_hero_image_caption')) {
+      $variables['hero_image_caption'] = $paragraph->get('field_hero_image_caption')->value;
+    }
+    if ($paragraph->hasfield('field_hero_image_position')) {
+      $variables['hero_image_position'] = $paragraph->get('field_hero_image_position')->value;
+    }
+    if ($paragraph->hasfield('field_hero_bottom_message')) {
+      $variables['hero_bottom_message'] = $paragraph->get('field_hero_bottom_message')->value;
+    }
+    if ($paragraph->hasfield('field_hero_bottom_message_link')) { 
+      $links = $paragraph->get('field_hero_bottom_message_link')->getValue();
+      if(!empty($links)) {
+        foreach($links as $id=>$link) {
+          $variables['hero_bottom_link'][$id]['link_url'] = Url::fromUri($link['uri']);
+          $variables['hero_bottom_link'][$id]['link_title'] = $link['title'];
+        }
+      }
+    }
+    if ($paragraph->hasfield('field_hero_image')) {
+      if (isset($paragraph->field_hero_image->getValue()[0])) {
+        $hero_image = $paragraph->field_hero_image->getValue()[0];
+        if (isset($hero_image) && $hero_image > 0) {
+          $media = Media::load($hero_image['target_id']);
+          $media_field = $media->get('field_media_image')->first()->getValue(); 
+          $alt = $media_field['alt'];
+          $file =  File::load($media_field['target_id']);
+          if ($file) {
+            $uri = $file->getFileUri();
+            $url = \Drupal::service('file_url_generator')->generateString($uri);
+            $variables['hero_image_uri'] = $uri;
+            $variables['hero_image_alt'] = $alt;
+          }
+        }
+      }
+    }
+    if ($paragraph->hasfield('field_hero_background_image')) {
+      if (isset($paragraph->field_hero_background_image->getValue()[0])) {
+        $hero_background_image = $paragraph->field_hero_background_image->getValue()[0];
+        if (isset($hero_background_image) && $hero_background_image > 0) {
+          $media = Media::load($hero_background_image['target_id']);
+          $media_field = $media->get('field_media_image')->first()->getValue(); 
+          $alt = $media_field['alt'];
+          $file =  File::load($media_field['target_id']);
+          if ($file) {
+            $uri = $file->getFileUri();
+            $url = \Drupal::service('file_url_generator')->generateString($uri);
+            $variables['hero_background_image_uri'] = $uri;
+            $variables['hero_background_image_alt'] = $alt;
+          }
+        }
+      }
+    }
+    if ($paragraph->hasfield('field_hero_background_image_mobi')) {
+      if (isset($paragraph->field_hero_background_image_mobi->getValue()[0])) {
+        $hero_background_image_mobile = $paragraph->field_hero_background_image_mobi->getValue()[0];
+        if (isset($hero_background_image_mobile) && $hero_background_image_mobile > 0) {
+          $media = Media::load($hero_background_image_mobile['target_id']);
+          if (!empty($media)) {
+            $media_field = $media->get('field_media_image')->first()->getValue(); 
+            $alt = $media_field['alt'];
+            $file =  File::load($media_field['target_id']);
+            if ($file) {
+              $uri = $file->getFileUri();
+              $url = \Drupal::service('file_url_generator')->generateString($uri);
+              $variables['hero_background_image_mobile_uri'] = $uri;
+              $variables['hero_background_image_mobile_alt'] = $alt;
+            }
+          }
+        }
+      }
+    }
+    if ($paragraph->hasfield('field_hero_body')) {
+      if (!empty($paragraph->field_hero_body->getValue()[0]['value'])) {
+        $variables['hero_body'] = [     
+          '#type' => 'processed_text',     
+          '#text' => $paragraph->field_hero_body->getValue()[0]['value'],     
+          '#format' => $paragraph->field_hero_body->getValue()[0]['format']   
+        ];
+      }
+    }
+    if ($paragraph->hasfield('field_hero_links')) { 
+      $links = $paragraph->get('field_hero_links')->getValue();
+      if(!empty($links)) {
+        foreach($links as $id=>$link) {
+          $variables['hero_link'][$id]['link_url'] = Url::fromUri($link['uri']);
+          $variables['hero_link'][$id]['link_title'] = $link['title'];
+          $variables['hero_link'][$id]['link_class'] = $link['options']['attributes']['class'];
+        }
+      }
+    }
+    if ($paragraph->hasfield('field_hero_text_color')) {
+      $variables['hero_text_color'] = $paragraph->get('field_hero_text_color')->getValue()[0]['value'];
+    }
+    if ($paragraph->hasfield('field_hero_background_color')) {
+      $variables['hero_background_color'] = $paragraph->get('field_hero_background_color')->getValue()[0]['value'];
+    }
+  }
+  if ($bundle === 'four_columns' ) {
+    if ($paragraph->hasfield('field_stacking')) {
+      $variables['stacking'] = $paragraph->get('field_stacking')->getValue()[0]['value'];
+    }
+  }
+  if ($bundle === 'image_text_with_link' ) {
+    if ($paragraph->hasfield('field_icon_background_color')) {
+      if (isset($paragraph->field_icon_background_color->getValue()[0])) {
+        $variables['icon_background_color'] = $paragraph->get('field_icon_background_color')->getValue()[0]['value'];
+      }
+    }
+  }
+  if ($bundle === 'pull_quote' ) {
+    if ($paragraph->hasfield('field_quote')) {
+      if (!empty($paragraph->field_quote->getValue()[0]['value'])) {
+        $variables['quote'] = [     
+          '#type' => 'processed_text',     
+          '#text' => $paragraph->field_quote->getValue()[0]['value'],     
+          '#format' => $paragraph->field_quote->getValue()[0]['format']   
+        ];
+      }
+    }
+    if ($paragraph->hasfield('field_attribution')) {
+      $variables['attribution'] = $paragraph->get('field_attribution')->getValue()[0]['value'];
+    }
+    if ($paragraph->hasfield('field_justification')) {
+      $variables['justification'] = $paragraph->get('field_justification')->getValue()[0]['value'];
+    }
+  }
+}
+
+
+
+
+
+function nighthawk_base_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_id == 'search_block_form') {
+    $form['keys']['#attributes']['placeholder'] = t('Search');
+  }
+}

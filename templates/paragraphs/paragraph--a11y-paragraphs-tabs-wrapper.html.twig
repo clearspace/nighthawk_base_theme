@@ -1,0 +1,53 @@
+{# Attach CSS/JS Libraries #}
+{{ attach_library('a11y_paragraphs_tabs/assets') }}
+{{ attach_library('a11y_paragraphs_tabs/a11y-accordion-tabs') }}
+
+{# Sets Unique ID for Accordion from Paragraph ID. #}
+{% set section_id = 'section' ~ paragraph.id.value %}
+{% set tab_id = 'tab' ~ paragraph.id.value %}
+
+{% block paragraph %}
+  {% block content %}
+    <div class="a11y-paragraphs-tabs__wrapper">
+      {% if parent.type.0.target_id == 'content' %}<div class="container">{% endif %}
+        <div class="row">
+          <div class="col-12">
+            {% if h2_title %}
+              <h2 class="title">
+                {{ h2_title }}
+              </h2>
+            {% endif %}
+
+            <div class="accordion-tabs js-tabs">
+              <ul role="tablist" class="tabs-tab-list">
+                {# Loops through the tab sections to print the tab section titles. #}
+                {% for key, item in titles %}
+                  <li role="presentation">
+                    <a href="#{{ section_id }}-{{ key + 1 }}" role="tab" id="{{ tab_id }}-{{ key + 1 }}" aria-controls="{{ section_id }}-{{ key + 1 }}" aria-selected="true" class="tabs-trigger js-tabs-trigger">{{ item }}</a>
+                  </li>
+                {% endfor %}
+              </ul>
+
+              {# Loops through the tab sections again to print the tab section bodies. #}
+              {% for key, item in titles %}
+                <section id="{{ section_id }}-{{ key + 1 }}" role="tabpanel" aria-labelledby="{{ tab_id }}-{{ key + 1 }}" class="tabs-panel js-tabs-panel" tabindex="0">
+
+                  <div class="accordion-trigger js-accordion-trigger" aria-controls="{{ section_id }}-{{ key + 1 }}" aria-expanded="true" tabindex="0">
+                    {{ item }}
+                  </div>
+
+                  <div class="content" aria-hidden="false">
+                    {{ content._field_layout.content.field_a11y_para_tabs_tabs_panel[key] }}
+                  </div>
+
+                </section>
+              {% endfor %}
+
+
+            </div>
+          </div>
+        </div>
+      {% if parent.type.0.target_id == 'content' %}</div>{% endif %}
+    </div>
+  {% endblock %}
+{% endblock paragraph %}

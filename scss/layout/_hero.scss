@@ -1,0 +1,188 @@
+.hero-wrap {
+	width: 100%;
+	height: auto;
+	@include media-breakpoint-up(md) {
+	}
+	&.dark {
+		color: $black;
+	}
+	&.light { 
+		color: $white;
+	}
+	&.background-light {
+		background: $white;
+	}
+	&.background-dark {
+		background: $black;
+	}
+	.hero-inner-wrap {
+		background-size: 0;
+		width: 100%;
+		background-repeat: no-repeat;
+		@include media-breakpoint-up(md) {
+			background-size: cover;
+			background-position: center;
+			background: default !important; 
+			display: flex;
+			align-items: center;
+		}
+		&.desktop {
+			background-size: 0;
+			@include media-breakpoint-up(md) {
+				background-size: cover;
+			}
+		}
+		&.mobile {
+			background-size: cover;
+			@include media-breakpoint-up(md) {
+				background-size: 0;
+			}
+		}
+		@include media-breakpoint-up(xl) {
+		}
+		.hero.container { 
+			padding-top: 4rem;
+			padding-bottom: 0;
+			@include media-breakpoint-up(xl) {
+				padding-top: 5rem;
+				padding-bottom: 5rem;
+			}
+			.row {
+				display: flex;
+				flex-direction: column; 
+				@include media-breakpoint-up(xl) {
+					flex-direction: row;
+				}
+				&.image_left {
+					@include media-breakpoint-up(xl) {
+						flex-direction: row-reverse;
+					}
+				}
+				.col-12,
+				.col-9,
+				.col-6,
+				.col-3 {
+					.patient-stories-link {
+						display: flex;
+						justify-content: center;
+						margin-bottom: 1rem;
+						a {
+							font-size: 1.6rem;
+							font-weight: $font-bold;
+						} 
+					}
+					h1.title {
+						font-size: 5rem;
+						font-weight: $font-bold;
+						line-height: 1;
+						margin-bottom: 2.1rem;
+						@include media-breakpoint-up(md) {
+							font-size: 4rem;
+						}
+						strong {
+							font-weight: $font-medium;
+						}
+						span.second-line {
+							font-size: 2rem;
+						}
+					}
+					.hero-body {
+						font-size: 1.8rem;
+						font-weight: $font-light;
+						margin-bottom: 3.5rem;
+						p { 
+
+						}
+					}
+					.hero-links {
+						ul.links {
+							list-style: none;
+							padding: 0;
+							display: flex;
+							flex-direction: column;
+							margin-bottom: 0;
+							&.centered-buttons {
+								justify-content: center;
+							}
+							@include media-breakpoint-up(xl) { 
+								flex-direction: row;
+							}
+							li {
+								margin-bottom: 2rem;
+								@include media-breakpoint-up(xl) {
+									margin-right: 2rem;
+								}
+								a {
+									&:hover {
+										text-decoration: none;
+									}
+								}
+								&:last-child {
+									margin-right: 0;
+								}
+							}
+						}
+					}
+					.hero-link-subtext {
+						font-weight: $font-light;
+						font-size: 1.3rem;
+						margin-bottom: 2rem;
+					}
+					&.centered {
+						text-align: center;
+						.hero-links {
+							ul.links {
+								
+								@include media-breakpoint-up(xl) {
+									flex-direction: row;
+									justify-content: center;
+								}
+							}
+						}
+					}
+				}
+				.hero-image {
+					img {
+						width: 100%;
+						margin-bottom: 2rem;
+					}	
+					.hero-image-caption {
+						font-size: 1.4rem;
+						text-align: center;
+						margin-bottom: 2rem;
+					}
+				}
+			}
+		}
+	}
+	&.no-background {
+		min-height: 0;
+		background: none;
+		.hero-inner-wrap {
+			min-height: 0;
+			.hero.container {
+				padding-top: 6rem;
+				padding-bottom: 2rem;
+				.col-12 {
+					h1.title {
+						font-size: 5rem;
+						font-weight: $font-medium;
+						line-height: 1.1;
+						margin-bottom: 0;
+						text-align: center;
+						margin-bottom: 2rem;
+						@include media-breakpoint-up(md) {
+							font-size: 7rem;
+						}
+						strong {
+							font-weight: $font-bold;
+						}
+					}
+				}
+			}
+		}
+	}
+	.hero-icons {
+		display: none;
+	}
+}

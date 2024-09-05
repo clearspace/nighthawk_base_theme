@@ -1,0 +1,20 @@
+.field--name-field-content {
+	.paragraph--type--content {
+		.layout {
+			.layout__region {
+				.field--name-field-sections {
+					> .field__item {
+						margin-top: 1rem;
+						margin-bottom: 1rem;
+						&:first-child {
+							margin-top: 2rem;
+						}
+						&:last-child {
+							margin-bottom: 2rem;
+						}
+					}
+				}
+			}
+		}
+	}
+}

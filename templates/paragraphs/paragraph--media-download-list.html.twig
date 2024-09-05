@@ -1,0 +1,18 @@
+<div class="media-download-list">
+  {% if parent.type.0.target_id != 'content_with_sidebar' %}<div class="container">{% endif %}
+      <div class="row">
+        <div class="col-12">
+          {% if h2_title %}
+            <h2 class="title">
+              {{ h2_title }}
+            </h2>
+          {% endif %}
+          {% if paragraph.field_media_item %}
+            <div class="list">
+              {{ paragraph.field_media_item|view }}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+  {% if parent.type.0.target_id != 'content_with_sidebar' %}</div>{% endif %}
+</div>

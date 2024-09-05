@@ -1,0 +1,18 @@
+.menu--top-header-right-menu {
+	ul.nav {
+		display: flex;
+		justify-content: flex-end;
+		li.nav-item {
+			a.nav-link {
+				color: $white;
+				text-decoration: none;
+				i {
+					color: $mn-green;
+				}
+				&:hover {
+					text-decoration: underline;
+				}
+			}
+		}
+	}
+}

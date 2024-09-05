@@ -1,0 +1,18 @@
+<div class="pull-quote {{ justification }}">
+  {% if parent.type.0.target_id != 'content_with_sidebar' %}<div class="container">{% endif %}
+    <div class="row">
+      <div class="col-12">
+        {% if quote %}
+          <div class="quote">
+            {{ quote }}
+          </div>
+        {% endif %}
+        {% if attribution %}
+          <div class="attribution">
+            {{ attribution }}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  {% if parent.type.0.target_id != 'content_with_sidebar' %}</div>{% endif %}
+</div>

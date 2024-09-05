@@ -1,0 +1,121 @@
+.accordions {
+	.container {
+		padding-left: 0;
+		padding-right: 0;
+		.row {
+			.col-12 {
+				h2 {
+					margin-bottom: 2rem;
+				}
+				.section-text {
+					margin-bottom: 4rem; 
+					p {
+
+					}
+				}
+				.ui-accordion {
+					h3.accordion-title {
+						background-color: $light-gray;
+					    color: $black !important;
+					    cursor: pointer;
+					    outline: none;
+					    padding: 2rem;
+					    position: relative;
+					    text-transform: none;
+					    transition: all .3s ease-in-out;
+					    letter-spacing: 0.025em;
+					    line-height: 1.44em;
+					    border-radius: 0;
+					    margin-bottom: 0;
+					    display: flex;
+					    flex-direction: row-reverse;
+					    justify-content: space-between;
+					    align-items: center;
+					    border: 1px solid $light-gray;
+					    margin-top: 2rem;
+					    &:hover,
+					    &:focus,
+					    &.ui-state-active {
+					      background-color: $light-gray !important;
+					    }
+					    &:first-child {
+					    	margin-top: 0;
+					    }
+						span.ui-accordion-header-icon {
+							background: none !important;
+						    &:before {
+							    content: "+";
+							    position: absolute;
+							    text-align: center;
+							    transition: all .5s ease-in-out;
+							    left: -.1rem;
+							    top: -.1rem;
+							    color: $black;
+							    text-indent: 0;
+						    }
+						}
+						&.ui-state-active {
+							span.ui-accordion-header-icon {
+								&:before {
+									transform: rotate(-225deg);
+								    font-weight: $font-bold;
+								}
+							}
+						}
+						a {
+							color: $black !important;
+							font-size: 1.8rem;
+							margin-left: .5rem;
+							.field--name-field-accordion-header {
+								.header-accordion {
+									display: flex;
+									span.icon-image {
+										img {
+
+										}
+									}
+									span.left-padding {
+										padding-left: 2rem;
+									}
+									.header-title {
+										display: flex;
+										flex-direction: column;
+										justify-content: center; 
+										.title {
+											color: $blue;
+											font-size: 2rem;
+											font-weight: $font-bold;
+										}
+										.subtitle {
+											font-weight: $font-bold;
+											font-size: 1.6rem;
+											margin-top: 1rem;
+										}
+									}
+								}
+							}
+						}
+					}
+					.accordion-description {
+						padding: 3rem;
+						border-color: $light-gray;
+						.field--name-field-description {
+							font-size: 1.8rem;
+							p {
+
+							}
+							a {
+								color: $blue;
+								&:hover {
+									text-decoration: underline;
+									text-underline-position: under;
+									color: $blue;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

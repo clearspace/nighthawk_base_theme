@@ -1,0 +1,7 @@
+.field--name-field-media-oembed-video {
+	width: 100%;
+	iframe {
+		width: min(1600px, 100%);
+		height: clamp(150px, 48vw, 300px);
+	}
+}

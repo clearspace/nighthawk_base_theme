@@ -1,0 +1,595 @@
+.block-tb-megamenu {
+	width: auto;
+	width: 100%;
+	position: unset;
+	top: 10rem;
+	@include media-breakpoint-up(md) {
+		padding-right: 1rem;
+		margin-right: 0;
+		display: flex;
+		justify-content: flex-end;
+	}
+	.content {
+		.tbm-main {
+			background: none;
+			position: unset;
+			display: flex;
+			justify-content: flex-end;
+			@include media-breakpoint-up(lg) {
+				position: relative;
+			}
+			button.tbm-button {
+			    top: 2.5rem;
+			    right: 1.5rem;
+			    border: none;
+			    border-radius: 0;
+			    display: flex !important;
+			    background: transparent;
+			    box-shadow: none;
+			    margin-bottom: 0;
+		      	@include media-breakpoint-up(lg) {
+		        	display: none !important; 
+		      	}
+		      	i {
+	        		margin-left: 0;
+	        		width: auto;
+	        		height: auto;
+	        		line-height: 1; 
+		        	&:before {
+		        		color: $black;
+		        		font-size: 2.5rem;
+		        		font-style: initial;
+		        	} 
+		      	}
+		      	span.mobile-menu-toggle-text {
+		      		font-size: 0px;
+		      	}
+		      	&:focus {
+		      	}
+		    }
+			.tbm-collapse {
+				position: absolute;
+				left: 0;
+				top: 11rem;
+				width: auto;
+				min-width: 27.5rem;
+				width: 100%;
+				background: none;
+				margin-top: 0;
+				@include media-breakpoint-up(lg) {
+					height: auto !important;
+					overflow: visible !important;
+					top: 0;
+					position: relative;
+					min-width: 0;
+				}
+				.top-mobile-nav {
+					background: $white;
+					display: flex;
+					padding-left: 2rem;
+					padding-right: 2rem;
+					font-size: 1.6rem;
+					@include media-breakpoint-up(lg) {
+						display: none;
+					}
+					ul.clearfix {
+						display: flex;
+						width: 100%;
+						justify-content: space-between;
+						&:after {
+							display: none;
+						}
+						li.nav-item {
+							a.nav-link {
+								text-decoration: none;
+								i {
+
+								}
+								span.link-text {
+
+								}
+							}
+						}
+					}
+				}
+				.search-section {
+					background: $white;
+					padding: 2rem 3rem;
+					@include media-breakpoint-up(lg) {
+						display: none;
+					}
+					form.search-block-form {
+						border: 1px solid $black;
+						border-radius: 1rem;
+						background: $white;
+						display: flex;
+						justify-content: space-between;
+						padding: 1rem 2rem;
+						fieldset.form-type-search {
+							padding: 0;
+							margin: 0 !important;
+							display: flex;
+							label {
+
+							}
+							legend {
+
+							}
+							input {
+								border: none;
+								box-shadow: none;
+								margin: 0;
+								line-height: 1;
+								height: auto;
+								display: flex;
+								padding: .375rem .75rem;
+								&::placeholder {
+									font-size: 1.4rem;
+									color: $black;
+								}
+							}
+						}
+						.form-actions {
+							margin: 0 !important;
+							display: flex;
+							button.form-submit {
+								font-size: 0;
+								border: none;
+								box-shadow: none;
+								background: none;
+								padding: 0;
+								line-height: 1;
+								&:after {
+									font-size: 2rem;
+									font-family: $fa;
+									font-weight: $font-regular;
+									content: "\f002";
+									color: $black;
+								}
+								&:focus:not(:focus-visible) {
+									outline: auto;
+								}
+								&:focus-visible {
+									outline: auto;
+								}
+							}
+						}
+					}
+				}
+				ul.tbm-nav {
+					justify-content: flex-end;
+					display: flex;
+					flex-direction: column;
+					background: $white;
+					border-top: none;
+					padding-bottom: 1.5rem;
+					@include media-breakpoint-up(lg) {
+						flex-direction: row;
+						background: none;
+						align-items: center;
+						border: none;
+						padding-bottom: 0;
+					}
+					li {
+						&.tbm-item {
+							&.level-1 {
+								border: none;
+								padding: 0 2rem;
+								padding: .5rem 2rem;
+								@include media-breakpoint-up(lg) {
+									padding: 0 2rem;
+								}
+								> a {
+									background: $white;
+									padding: 0;
+									font-size: 1.5rem;
+									font-weight: $font-regular;
+									margin-left: 0;
+									color: $black;
+									text-transform: none;
+									border: none;
+									@include media-breakpoint-up(lg) {
+										border-bottom: 4px solid transparent;
+										display: none;
+									}
+									&:hover {
+										background: $white;
+										color: $blue;
+										text-decoration: none;
+										@include media-breakpoint-up(lg) {
+										}
+									}
+								}
+								&:last-child {
+									@include media-breakpoint-up(lg) {
+										padding-right: 0;
+									}
+								}
+							}
+							&.tbm-item--has-dropdown {
+								border-bottom: 1px solid $white;
+								@include media-breakpoint-up(lg) {
+									border-bottom: none;
+									padding: 0 1rem;
+								}
+								@include media-breakpoint-up(xl) {
+									padding: 0 2rem;
+								}
+								a,
+								span {
+									border: none;
+									color: $black;
+									font-weight: $font-bold;
+									padding: 1rem 3rem;
+									font-size: 1.8rem;
+									background: none;
+									text-transform: uppercase;
+									@include media-breakpoint-up(lg) {
+										padding: 0rem;
+										color: $black;
+										font-size: 1.7rem;
+									}
+									@include media-breakpoint-up(xl) {
+										font-size: 1.8rem;
+									}
+									&.button {
+										text-transform: none;
+										font-size: 1.4rem;
+									}
+									@include media-breakpoint-up(xl) {
+									}
+									&:after {
+										@include media-breakpoint-up(lg) {
+											display: none;
+										}
+									}
+								}
+							}
+							.tbm-link-container {
+								a {
+									&.tbm-link {
+										font-weight: $font-bold;
+										text-transform: uppercase;
+										font-size: 1.8rem;
+										text-decoration: none;
+										padding: 0;
+										&:hover {
+											background: none;
+											text-decoration: none;
+										}
+									}
+									&.tbm-toggle {
+										display: flex;
+										align-items: center;
+										justify-content: space-between;
+										@include media-breakpoint-up(lg) {
+											background: none !important;
+										}
+										span.caret {
+											display: none !important;
+											@include media-breakpoint-up(lg) {
+												display: none !important;
+											}
+											&:after {
+												display: inline-block;
+											}
+										}
+										&:after {
+											display: none;
+											border: none;
+											font-family: $fa;
+											font-weight: $font-regular;
+											content: "\f105";
+											color: $blue;
+											@include media-breakpoint-up(lg) {
+												content: "\f107";
+												display: inline-block;
+											}
+											@include media-breakpoint-up(xl) {
+												padding-left: .5rem;
+											}
+										}
+										&:hover {
+											@include media-breakpoint-up(lg) {
+												color: $black;
+												text-decoration: none;
+											}
+										}
+									}
+								}
+								&.open {
+									a {
+										&.tbm-toggle {
+											&:after {
+												content: "\f107";
+											}
+										}
+									}
+								}
+								button.tbm-submenu-toggle {
+									background: none;
+									border: none;
+									&:before {
+										display: none;
+									}
+									&:after {
+										display: inline-block;
+										border: none;
+										font-family: $fa;
+										font-weight: $font-regular;
+										content: "\2b";
+										color: $black;
+										@include media-breakpoint-up(lg) {
+											content: "\f107";
+										}
+										@include media-breakpoint-up(xl) {
+											padding-left: .5rem;
+										}
+									}
+									&[aria-expanded="true"] {
+										&:after {
+											content: "\f068";
+										}
+									}
+								}
+							}
+							> .tbm-submenu {
+								border-bottom: none;
+								background: $white;
+								margin-top: 0;
+								box-shadow: none;
+								border-top: none;
+								@include media-breakpoint-up(lg) {
+									border: none;
+									width: auto;
+									left: auto;
+									box-shadow: 0px 3px 5px 1px rgba(0,0,0,0.31);
+									padding: 0;
+								}
+								.tbm-row {
+									padding: 0;
+									.tbm-column {
+										.tbm-column-inner {
+											padding: 0;
+											ul.tbm-subnav {
+												background: $white;
+												li.tbm-item {
+													margin-top: 0;
+													border: none;
+													padding: 0;
+													&:first-child {
+														margin-top: 0;
+													}
+													.tbm-link-container {
+														span.tbm-group-title {
+															padding: 0;
+															font-size: 1.8rem;
+															font-weight: $font-bold;
+															padding: .75rem 3rem;
+															color: $black;
+															text-transform: none;
+														}
+													}
+													&.buttons {
+														display: flex;
+														justify-content: center;
+													}
+													a {
+														padding: 0;
+														padding: .75rem;
+														font-size: 1.5rem;
+														font-weight: $font-regular;
+														margin-left: 0;
+														color: $black;
+														text-transform: none;
+														&:hover {
+															background: $light-gray;
+															color: $blue;
+															text-decoration: none;
+														}
+														&.button {
+															margin: 1rem 2rem;
+														}
+													}
+													.tbm-group-container {
+														border: none;
+														margin: 0;
+														.tbm-row {
+															padding: 0;
+															.tbm-column {
+																.tbm-column-inner {
+																	padding: 0;
+																	.tbm-subnav {
+																		li.tbm-item {
+																			margin: 0;
+																			a {
+																				padding: 0;
+																				padding: .75rem 3rem;
+																				font-size: 1.5rem;
+																				font-weight: $font-regular;
+																				margin-left: 0;
+																				color: $black;
+																				text-transform: none;
+																				&:hover {
+																					background: $light-gray;
+																					color: $blue;
+																				}
+																				svg {
+																					display: none;
+																				}
+																			}
+
+																			&.active-trail {
+																				a {
+																					padding: 0;
+																					padding: .75rem 3rem;
+																					background: none;
+																					font-size: 1.5rem;
+																					font-weight: $font-regular;
+																					&:hover {
+																						background: $light-gray;
+																						color: $blue;
+																					}
+																				}
+																			}
+																		}
+																	}
+																}
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+							&.level-2 {
+								.tbm-group-container {
+									display: flex;
+									@include media-breakpoint-up(lg) {
+										display: none;
+									}
+								}
+							}
+							&:nth-child(4) {
+								.tbm-submenu {
+									right: 0;
+								}
+							}
+						}
+						&.donate {
+							margin-left: 2rem;
+							display: none;
+							@include media-breakpoint-up(lg) {
+								display: block;
+							}
+							@include media-breakpoint-up(xl) {
+								margin-left: 7rem;
+							}
+							a {
+								background: $red;
+								color: $white;
+								border-radius: 2.7rem;
+								padding: 1rem 3.5rem;
+								transition: transform .2s;
+								transform: scale(1);
+								&:hover {
+									transition: transform .2s;
+									transform: scale(1.05);
+								}
+								svg {
+									display: none;
+								}
+							}
+						}
+						&.search-dropdown {
+							a {
+								font-size: 0;
+								display: none;
+								@include media-breakpoint-up(lg) {
+									display: block;
+								}
+								&:after {
+									font-family: $fa;
+									font-weight: $faw;
+									content: "\f002";
+									color: $black;
+									font-size: 1.6rem;
+									display: block;
+									border: none;
+								}
+								&:hover {
+									cursor: pointer;
+								}
+								&.caret {
+									display: none;
+								}
+							}
+							.tbm-submenu {
+								left: unset;
+								right: 0;
+								padding: 1.5rem 3rem 1.5rem 3rem;
+								background: $light-gray;
+								display: block;
+								@include media-breakpoint-up(lg) {
+									background: $white;
+									display: none;
+								}
+								.mega-dropdown-inner {
+									.tbm-row {
+										.tbm-column {
+											.tbm-column-inner {
+												padding: 0;
+												.tbm-block {
+													.block-inner {
+														.block-search {
+															.content {
+																.content {
+																	width: 100%;
+																	form.search-block-form {
+																		display: flex;
+																		align-items: center;
+																		background: $white;
+																		padding: .75rem 1.5rem;
+																		border-radius: 2.5rem;
+																		max-width: 22rem;
+																		border: 1px solid $light-gray;
+																		fieldset.form-type-search {
+																			display: flex;
+																			margin: 0 !important;
+																			padding: 0;
+																			width: 100%;
+																			label {
+
+																			}
+																			input.form-search {
+																				background: none;
+																				border: none;
+																				box-shadow: none;
+																				height: auto;
+																				padding: 0;
+																				margin: 0;
+																			}
+																		}
+																		.form-actions {
+																			margin: 0 !important;
+																			button.button {
+																				border: none;
+																				font-size: 0px;
+																				padding: 0;
+																				background: none;
+																				line-height: 1;
+																				&:after {
+																					font-family: $fa;
+																					font-weight: $faw;
+																					content: "\f002";
+																					color: $black;
+																					font-size: 1.6rem;
+																					display: block;
+																				}
+																			}
+																		}
+																	}
+																}
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+							&.open {
+								.tbm-submenu {
+									display: block !important;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

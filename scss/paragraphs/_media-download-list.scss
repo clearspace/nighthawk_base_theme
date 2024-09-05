@@ -1,0 +1,57 @@
+.media-download-list {
+	.col-12 {
+		h2.title {
+
+		}
+		.list {
+			.field--name-field-media-item {
+				.field__item {
+					.media-item {
+						display: flex;
+						justify-content: space-between;
+						border-bottom: 1px dashed $light-gray;
+						padding-top: 1rem;
+						padding-bottom: 1rem;
+						align-items: center;
+						.media-name {
+							.field--name-field-media-name {
+
+							}
+						}
+						.media {
+							.field--name-field-media {
+								margin: 0;
+								.layout {
+									.layout__region {
+										.field--name-field-media-document {
+											.field__item {
+												span {
+													a {
+														display: block;
+														border: 1px solid $light-gray;
+														padding: .75rem 1.25rem;
+														border-radius: 1rem;
+														text-decoration: none;
+														&:after {
+															font-family: $fa;
+															content: "\f019";
+															padding-left: .75rem;
+														}
+														&:hover {
+															background: $blue;
+															color: $white;
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,18 @@
+<div class="table-paragraph">
+  {% if parent.type.0.target_id != 'content_with_sidebar' %}<div class="container">{% endif %}
+      <div class="row">
+        <div class="col-12">
+          {% if h2_title %}
+            <h2 class="title">
+              {{ h2_title }}
+            </h2>
+          {% endif %}
+          {% if paragraph.field_table %}
+            <div class="table">
+              {{ paragraph.field_table|view }}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+  {% if parent.type.0.target_id != 'content_with_sidebar' %}</div>{% endif %}
+</div>

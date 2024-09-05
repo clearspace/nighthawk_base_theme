@@ -1,0 +1,12 @@
+<div class="media-item">
+	{% if paragraph.field_media_name %}
+		<div class="media-name">
+			{{ paragraph.field_media_name|view }}
+		</div>
+	{% endif %}
+	{% if paragraph.field_media %}
+		<div class="media">
+			{{ paragraph.field_media|view }}
+		</div>
+	{% endif %}
+</div>

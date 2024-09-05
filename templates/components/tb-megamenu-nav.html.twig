@@ -1,0 +1,19 @@
+<div class="top-mobile-nav">
+  {{ drupal_menu('top-mobile-menu') }}
+</div>
+<div class="search-section">
+   <form class="search-block-form search-form form-row" data-drupal-selector="search-block-form" action="/search/node" method="get" id="search-block-form" accept-charset="UTF-8">
+    <fieldset class="js-form-item js-form-type-search form-type-search js-form-item-keys form-item-keys form-no-label mb-3">
+      <label for="edit-keys-search" class="visually-hidden">Search</label>
+      <legend class="visually-hidden js-form-required form-required">Search Area</legend>
+      <input title="Enter the terms you wish to search for." placeholder="Search" data-drupal-selector="edit-keys-search" type="search" id="edit-keys-mobile" name="keys" value="" size="15" maxlength="128" class="form-search form-control" />
+    </fieldset>
+    <div data-drupal-selector="edit-actions" class="form-actions js-form-wrapper mb-3" id="edit-actions--mobile-search"><button data-drupal-selector="edit-submit" type="submit" id="mobile-search-submit" value="Search" aria-label="Search Button" class="button js-form-submit form-submit btn btn-">Search Button</button>
+    </div>
+  </form>
+</div>
+<ul {{ attributes }} >
+  {% for li in lis %}
+    {{ li }}
+  {% endfor %}
+</ul>

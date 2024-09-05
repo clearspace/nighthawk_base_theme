@@ -1,0 +1,27 @@
+<div class="image-title-text-link">
+  {% if paragraph_link %}
+    <a href="{{ paragraph_link }}">
+  {% endif %}
+    {% if image_uri %}
+      <img class="img-fluid" src="{{ file_url(image_uri) }}" />
+    {% endif %}
+    <div class="lower-text-area">
+      {% if h3_title %}
+        <h3 class="title">
+          {{ h3_title }}
+        </h3>
+      {% endif %}
+      {% if section_text %}
+        <div class="section-text">
+          {{ section_text }}
+        </div>
+      {% endif %}
+      {% if paragraph_link %}
+        <div class="link-icon">
+        </div>
+      {% endif %}
+    </div>
+  {% if paragraph_link %}
+    </a>
+  {% endif %}
+</div>

@@ -1,0 +1,83 @@
+{% if parent.type.0.target_id == 'content_with_sidebar' %}
+	<div class="video-area">
+		<div class="row">
+			<div class="col-12">
+				{% if h2_title %}
+					<h2 class="title">
+						{{ h2_title }}
+					</h2>
+				{% endif %}
+				{% if h3_title %}
+					<h3 class="title">
+						{{ h3_title }}
+					</h3>
+				{% endif %}
+				{{ paragraph.field_video|view }}
+				{% if subtitle %}
+					<div class="subtitle">
+						{{ subtitle }}
+					</div>
+				{% endif %}
+				{% if section_text %}
+					<div class="section-text"> 
+						{{ section_text }}
+					</div>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+{% elseif parent.type.0.target_id == 'content' %}
+	<div class="video-area{% if background_image_uri %} background-image{% endif %}{% if background_color %} background-{{ background_color }}{% endif %}{% if text_color %} text-{{ text_color }}{% endif %}"{% if background_image_uri %} style="{% if background_image_uri %}background-image: url({{ file_url(background_image_uri) }});{% endif %}"{% endif %}>
+		<div class="container">
+			<div class="row">
+				<div class="col-12">
+					{% if h2_title %}
+						<h2 class="title">
+							{{ h2_title }}
+						</h2>
+					{% endif %}
+					{% if h3_title %}
+						<h3 class="title">
+							{{ h3_title }}
+						</h3>
+					{% endif %}
+					{{ paragraph.field_video|view }}
+					{% if subtitle %}
+						<div class="subtitle">
+							{{ subtitle }}
+						</div>
+					{% endif %}
+					{% if section_text %}
+						<div class="section-text">
+							{{ section_text }}
+						</div>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+{% else %}
+	<div class="video-area{% if background_image_uri %} background-image{% endif %}{% if background_color %} background-{{ background_color }}{% endif %}{% if text_color %} text-{{ text_color }}{% endif %}"{% if background_image_uri %} style="{% if background_image_uri %}background-image: url({{ file_url(background_image_uri) }});{% endif %}"{% endif %}>
+		{% if h2_title %}
+			<h2 class="title">
+				{{ h2_title }}
+			</h2>
+		{% endif %}
+		{% if h3_title %}
+			<h3 class="title">
+				{{ h3_title }}
+			</h3>
+		{% endif %}
+		{{ paragraph.field_video|view }}
+		{% if subtitle %}
+			<div class="subtitle">
+				{{ subtitle }}
+			</div>
+		{% endif %}
+		{% if section_text %}
+			<div class="section-text"> 
+				{{ section_text }}
+			</div>
+		{% endif %}
+	</div>
+{% endif %}

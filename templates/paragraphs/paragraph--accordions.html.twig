@@ -1,0 +1,21 @@
+<div class="accordions">
+  {% if parent.type.0.target_id != 'content_with_sidebar' %}<div class="container">{% endif %}
+      <div class="row">
+        <div class="col-12">
+          {% if h2_title %}
+            <h2 class="title">
+              {{ h2_title }}
+            </h2>
+          {% endif %}
+          {% if section_text %}
+            <div class="section-text">
+              {{ section_text }}
+            </div>
+          {% endif %}
+          <div class="accordions-list">
+            {{ paragraph.field_accordions|view }}
+          </div>
+        </div>
+      </div>
+  {% if parent.type.0.target_id != 'content_with_sidebar' %}</div>{% endif %}
+</div>

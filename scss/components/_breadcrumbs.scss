@@ -1,0 +1,21 @@
+ol.breadcrumb {
+	font-size: 1.2rem;
+	margin-top: 1rem;
+	margin-bottom: 1rem;
+	li.breadcrumb-item {
+		&:before {
+			padding: 0;
+
+		}
+		&.active {
+			&:before {
+				padding-right: .5rem;
+			}
+		}
+		a {
+			color: $blue;
+			font-size: 1.2rem;
+
+		}
+	}
+}

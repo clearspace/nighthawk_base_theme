@@ -1,0 +1,20 @@
+<div class="image-text-link">
+  {% if paragraph_link %}
+    <a href="{{ paragraph_link }}">
+  {% endif %}
+    <span class="image{% if icon_background_color %} {{ icon_background_color }}{% endif %}">
+      {% if paragraph.field_font_awesome_icon.0 %}
+        {{ paragraph.field_font_awesome_icon|view }}      
+      {% elseif image_uri %}
+        <img class="img-fluid image-link" src="{{ file_url(image_uri) }}" />
+      {% endif %}
+    </span>
+    {% if text %}
+      <div class="image-link-text">
+        {{ text }}
+      </div>
+    {% endif %}
+  {% if paragraph_link %}
+    </a>
+  {% endif %}
+</div>

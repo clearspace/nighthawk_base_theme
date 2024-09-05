@@ -1,0 +1,21 @@
+<div class="image-and-text">
+  {% if parent.type.0.target_id != 'content_with_sidebar' %}<div class="container">{% endif %}
+      <div class="row">
+        <div class="col-12">
+          {% if h2_title %}
+            <h2 class="title">
+              {{ h2_title }}
+            </h2>
+          {% endif %}
+          {% if image_uri %}
+            <img class="img-fluid" src="{{ file_url(image_uri) }}" alt="{{ image_alt }}" />
+          {% endif %}
+          {% if section_text %}
+            <div class="section-text">
+              {{ section_text }}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+  {% if parent.type.0.target_id != 'content_with_sidebar' %}</div>{% endif %}
+</div>

@@ -1,0 +1,33 @@
+.pull-quote {
+	.row {
+		.col-12 {
+			display: flex;
+			flex-direction: column;
+			.quote {
+				p {
+
+				}
+			}
+			.attribution {
+
+			}
+		}
+	}
+	&.center {
+		.row {
+			.col-12 {
+				align-items: center;
+				.quote {
+					text-align: center;
+				}
+			}
+		}
+	}
+	&.left {
+		.row {
+			.col-12 {
+				align-items: flex-start;
+			}
+		}
+	}
+}
