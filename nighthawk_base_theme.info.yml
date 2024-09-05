@@ -6,7 +6,7 @@ core_version_requirement: ^9 || ^10
 base theme: bootstrap_barrio
 
 libraries:
-  - nighthawk_base/global-styling
+  - nighthawk_base_theme/global-styling
 libraries-override:
   bootstrap_barrio/global-styling: false
 regions:
@@ -30,5 +30,5 @@ regions:
 
 # Information added by Drupal.org packaging script on 2023-09-26
 version: '5.0.10'
-project: 'nighthawk_base'
+project: 'nighthawk_base_theme'
 datestamp: 1695756932
