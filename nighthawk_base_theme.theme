@@ -208,6 +208,7 @@ function nighthawk_base_theme_preprocess_paragraph(&$variables) {
       foreach($links as $id=>$link) {
         $variables['section_link'][$id]['link_url'] = Url::fromUri($link['uri']);
         $variables['section_link'][$id]['link_title'] = $link['title'];
+        $variables['section_link'][$id]['link_class'] = $link['options']['attributes']['class'];
       }
     }
   }
@@ -216,6 +217,7 @@ function nighthawk_base_theme_preprocess_paragraph(&$variables) {
     if(!empty($link)) {
       $variables['paragraph_link'] = Url::fromUri($link[0]['uri']);
       $variables['paragraph_link_title'] = $link[0]['title'];
+      $variables['paragraph_link_class'] = $link[0]['options']['attributes']['class'];
     }
   }
   if (isset($paragraph->field_background_image[0])) {
