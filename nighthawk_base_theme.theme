@@ -2,81 +2,90 @@
 
 /**
  * @file
- * Functions to support theming in the SASS Starterkit subtheme.
+ * Theme functions and preprocess implementations for the SASS Starterkit subtheme.
  */
 
-use Drupal\Core\GeneratedLink;
-use Drupal\Core\Link;
-use Drupal\Core\Render\Markup;
-use Drupal\Core\Url;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\media\Entity\Media;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\Core\Url;
 use Drupal\file\Entity\File;
-use Drupal\taxonomy\Entity\Term;
-use Drupal\node\Entity\Node;
-use Drupal\block_content\BlockContentInterface;
-use Drupal\block_content\Entity\BlockContent;
-use Drupal\paragraphs\Entity\Paragraph;
-use Drupal\Core\Datetime\DrupalDateTime;
-use Drupal\image\Entity\ImageStyle; 
+use Drupal\media\Entity\Media;
+use Drupal\node\NodeInterface;
 
 /**
  * Implements hook_form_system_theme_settings_alter() for settings form.
  *
  * Replace Barrio setting options with subtheme ones.
  */
-function nighthawk_base_theme_form_system_theme_settings_alter(&$form, FormStateInterface $form_state) {
-  $form['components']['navbar']['bootstrap_barrio_navbar_top_background']['#options'] = array(
-    'bg-primary' => t('Primary'),
-    'bg-secondary' => t('Secondary'),
-    'bg-light' => t('Light'),
-    'bg-dark' => t('Dark'),
-    'bg-white' => t('White'),
-    'bg-transparent' => t('Transparent'),
-  );
-  $form['components']['navbar']['bootstrap_barrio_navbar_background']['#options'] = array(
-    'bg-primary' => t('Primary'),
-    'bg-secondary' => t('Secondary'),
-    'bg-light' => t('Light'),
-    'bg-dark' => t('Dark'),
-    'bg-white' => t('White'),
-    'bg-transparent' => t('Transparent'),
-  );
+function nighthawk_base_theme_form_system_theme_settings_alter(array &$form, FormStateInterface $form_state): void {
+  $form['components']['navbar']['bootstrap_barrio_navbar_top_background']['#options'] = [
+    'bg-primary' => new TranslatableMarkup('Primary'),
+    'bg-secondary' => new TranslatableMarkup('Secondary'),
+    'bg-light' => new TranslatableMarkup('Light'),
+    'bg-dark' => new TranslatableMarkup('Dark'),
+    'bg-white' => new TranslatableMarkup('White'),
+    'bg-transparent' => new TranslatableMarkup('Transparent'),
+  ];
+  $form['components']['navbar']['bootstrap_barrio_navbar_background']['#options'] = [
+    'bg-primary' => new TranslatableMarkup('Primary'),
+    'bg-secondary' => new TranslatableMarkup('Secondary'),
+    'bg-light' => new TranslatableMarkup('Light'),
+    'bg-dark' => new TranslatableMarkup('Dark'),
+    'bg-white' => new TranslatableMarkup('White'),
+    'bg-transparent' => new TranslatableMarkup('Transparent'),
+  ];
 }
 
 /**
  * Implements hook_preprocess_html().
  */
-function nighthawk_base_theme_preprocess_html(&$variables) { 
-  $current_path = \Drupal::service('path.current')->getPath();
-  $path_alias = \Drupal::service('path_alias.manager')->getAliasByPath($current_path);
-  $path_alias = ltrim($path_alias, '/');
-  $variables['attributes']['class'][] = 'path-' . \Drupal\Component\Utility\Html::cleanCssIdentifier($path_alias);
+function nighthawk_base_theme_preprocess_html(array &$variables): void {
+  $path_current = \Drupal::service('path.current')->getPath();
+  $alias = \Drupal::service('path_alias.manager')->getAliasByPath($path_current) ?? '';
+  $alias = ltrim($alias, '/');
+  if ($alias !== '') {
+    $variables['attributes']['class'][] = 'path-' . \Drupal\Component\Utility\Html::cleanCssIdentifier($alias);
+  }
 
   $node = \Drupal::routeMatch()->getParameter('node');
-  if (isset($node->field_page_type[0])) {
+  if ($node instanceof NodeInterface && $node->hasField('field_page_type') && !$node->get('field_page_type')->isEmpty()) {
     $variables['page_type'] = $node->get('field_page_type')->value;
   }
 }
 
-function nighthawk_base_theme_preprocess_page(&$variables) {
-  if (!empty($variables['node'])) {
-    
+/**
+ * Implements hook_theme_suggestions_page_alter().
+ *
+ * Add page suggestions based on node bundle.
+ */
+function nighthawk_base_theme_theme_suggestions_page_alter(array &$suggestions, array $variables): void {
+  if (!empty($variables['node']) && $variables['node'] instanceof NodeInterface) {
+    $suggestions[] = 'page__' . $variables['node']->bundle();
+  }
+}
+
+/**
+ * Implements hook_preprocess_page().
+ */
+function nighthawk_base_theme_preprocess_page(array &$variables): void {
+  if (!empty($variables['node']) && $variables['node'] instanceof NodeInterface) {
     $variables['route_name'] = \Drupal::routeMatch()->getRouteName();
 
-    if ($node = \Drupal::routeMatch()->getParameter('node')) {
-      $suggestions[] = 'page__' . $node->bundle();
-    }
     $node = $variables['node'];
-    if ($node->hasfield('field_body_title')) {
-      $variables['body_title'] = $node->field_body_title->value;
-    }  
-    if ($node->hasfield('body')) {
-      if (!empty($node->body->getValue()[0]['value'])) {
-        $variables['body'] = [     
-          '#type' => 'processed_text',     
-          '#text' => $node->body->getValue()[0]['value'],     
-          '#format' => $node->body->getValue()[0]['format']   
+
+    if ($node->hasField('field_body_title') && !$node->get('field_body_title')->isEmpty()) {
+      $variables['body_title'] = $node->get('field_body_title')->value;
+    }
+
+    if ($node->hasField('body') && !$node->get('body')->isEmpty()) {
+      $body_item = $node->get('body')->first();
+      $value = $body_item->get('value')->getString();
+      $format = $body_item->get('format')->getString();
+      if ($value !== '') {
+        $variables['body'] = [
+          '#type' => 'processed_text',
+          '#text' => $value,
+          '#format' => $format,
         ];
       }
     }
@@ -84,317 +93,347 @@ function nighthawk_base_theme_preprocess_page(&$variables) {
 }
 
 /**
- * Implements hook_theme_suggestions_alter() for contact form container.
+ * Implements hook_theme_suggestions_container_alter().
  */
-function nighthawk_base_theme_theme_suggestions_container_alter(array &$suggestions, array &$variables) {
-  $name = '';
-  $type = '';
-  if (isset($variables['element']['#name'])) {
-    $name = $variables['element']['#name'];
-  }
-
-  if (isset($variables['element']['#type'])) {
-    $type = $variables['element']['#type'];
-  }
-
+function nighthawk_base_theme_theme_suggestions_container_alter(array &$suggestions, array $variables): void {
+  $name = $variables['element']['#name'] ?? '';
+  $type = $variables['element']['#type'] ?? '';
   array_unshift($suggestions, 'container__' . $type . '__' . $name);
 }
 
-function nighthawk_base_theme_preprocess_field(array &$variables, $hook) {
- if ($node = \Drupal::request()->attributes->get('node')) {
-   $variables['nid'] = $node->id();
- }
+/**
+ * Implements hook_preprocess_field().
+ */
+function nighthawk_base_theme_preprocess_field(array &$variables, $hook): void {
+  $request = \Drupal::requestStack()->getCurrentRequest();
+  if ($request) {
+    $node = $request->attributes->get('node');
+    if ($node instanceof NodeInterface) {
+      $variables['nid'] = $node->id();
+    }
+  }
 }
 
-
-function nighthawk_base_theme_preprocess_node(&$variables) {
-  $node = $variables['elements']['#node'];
+/**
+ * Implements hook_preprocess_node().
+ */
+function nighthawk_base_theme_preprocess_node(array &$variables): void {
+  // Keep for future node-level variable wiring if needed.
+  // $node = $variables['elements']['#node'] ?? NULL;
 }
 
-function nighthawk_base_theme_preprocess_paragraph(&$variables) {
+/**
+ * Implements hook_preprocess_paragraph().
+ */
+function nighthawk_base_theme_preprocess_paragraph(array &$variables): void {
+  /** @var \Drupal\paragraphs\Entity\Paragraph $paragraph */
   $paragraph = $variables['elements']['#paragraph'];
   $bundle = $paragraph->bundle();
 
-  //Get page title
-  $request = \Drupal::request();
+  // Get page title via the title resolver.
+  $request = \Drupal::requestStack()->getCurrentRequest();
   $route_match = \Drupal::routeMatch();
-  $variables['title'] = \Drupal::service('title_resolver')->getTitle($request, $route_match->getRouteObject());
-
-  //NID
-  if (!empty(\Drupal::routeMatch()->getParameter('node'))) {
-    $node = \Drupal::routeMatch()->getParameter('node');
-    $variables['nid'] = $node->id();
+  $title = \Drupal::service('title_resolver')->getTitle($request, $route_match->getRouteObject());
+  if ($title !== NULL) {
+    $variables['title'] = $title;
   }
-  //Get parent paragraph
-  $parent = $paragraph->getParentEntity(); 
-  
-  $variables['parent'] = $paragraph->getParentEntity(); 
 
-  if ($parent->hasfield('field_page_type')) {
+  // Current node id.
+  $route_node = \Drupal::routeMatch()->getParameter('node');
+  if ($route_node instanceof NodeInterface) {
+    $variables['nid'] = $route_node->id();
+  }
+
+  // Parent entity (could be node or another paragraph).
+  $parent = $paragraph->getParentEntity();
+  $variables['parent'] = $parent;
+
+  if ($parent && method_exists($parent, 'hasField') && $parent->hasField('field_page_type') && !$parent->get('field_page_type')->isEmpty()) {
     $variables['page_type'] = $parent->get('field_page_type')->value;
   }
-  
-  //Test to see if paragraph is on the front page
+
+  // Is front page?
   try {
     $variables['is_front'] = \Drupal::service('path.matcher')->isFrontPage();
   }
-  catch (Exception $e) {
+  catch (\Throwable $e) {
     $variables['is_front'] = FALSE;
   }
 
-  //Beginning of universal paragraph fields
-  if ($paragraph->hasfield('field_subtitle')) {
+  // ---- Universal paragraph fields ----
+  if ($paragraph->hasField('field_subtitle') && !$paragraph->get('field_subtitle')->isEmpty()) {
     $variables['subtitle'] = $paragraph->get('field_subtitle')->value;
   }
-  if ($paragraph->hasfield('field_title')) {
+  if ($paragraph->hasField('field_title') && !$paragraph->get('field_title')->isEmpty()) {
     $variables['title'] = $paragraph->get('field_title')->value;
   }
-  if ($paragraph->hasfield('field_h2_title')) {
+  if ($paragraph->hasField('field_h2_title') && !$paragraph->get('field_h2_title')->isEmpty()) {
     $variables['h2_title'] = $paragraph->get('field_h2_title')->value;
   }
-  if ($paragraph->hasfield('field_h3_title')) {
+  if ($paragraph->hasField('field_h3_title') && !$paragraph->get('field_h3_title')->isEmpty()) {
     $variables['h3_title'] = $paragraph->get('field_h3_title')->value;
   }
-  if ($paragraph->hasfield('field_background_color')) {
-    if (!empty($paragraph->field_background_color->getValue()[0])) {
-      $variables['background_color'] = $paragraph->get('field_background_color')->getValue()[0]['value'];
-    }
+  if ($paragraph->hasField('field_background_color') && !$paragraph->get('field_background_color')->isEmpty()) {
+    $variables['background_color'] = $paragraph->get('field_background_color')->value;
   }
-  if ($paragraph->hasfield('field_anchor_id')) {
+  if ($paragraph->hasField('field_anchor_id') && !$paragraph->get('field_anchor_id')->isEmpty()) {
     $variables['anchor_id'] = $paragraph->get('field_anchor_id')->value;
   }
-  if ($paragraph->hasfield('field_text_color')) {
+  if ($paragraph->hasField('field_text_color') && !$paragraph->get('field_text_color')->isEmpty()) {
     $variables['text_color'] = $paragraph->get('field_text_color')->value;
   }
-  if (isset($paragraph->field_image[0])) {
-    if (!empty($paragraph->field_image->getValue()[0])) {
-      $image = $paragraph->field_image->getValue()[0];
-      if (isset($image) && $image > 0) {
-        $media = Media::load($image['target_id']);
-        if (!empty($media)) {
-          $media_field = $media->get('field_media_image')->getValue()[0]; 
-          $alt = $media_field['alt'];
-          $file =  File::load($media_field['target_id']);
-          if ($file) {
-            $uri = $file->getFileUri();
-            $url = \Drupal::service('file_url_generator')->generateString($uri);
-            $variables['image_uri'] = $uri;
-            $variables['image_alt'] = $alt;
-          }
-        }
-      }
-    }
-  }
-  if ($paragraph->hasfield('field_section_text')) {
-    if (!empty($paragraph->field_section_text->getValue()[0]['value'])) {
-      $variables['section_text'] = [     
-        '#type' => 'processed_text',     
-        '#text' => $paragraph->field_section_text->getValue()[0]['value'],     
-        '#format' => $paragraph->field_section_text->getValue()[0]['format']   
-      ];
-    }
-  }
-  if ($paragraph->hasfield('field_text')) {
-    if (!empty($paragraph->field_text->getValue()[0]['value'])) {
-      $variables['text'] = [     
-        '#type' => 'processed_text',     
-        '#text' => $paragraph->field_text->getValue()[0]['value'],     
-      ];
-    }
-  }
-  if ($paragraph->hasfield('field_section_link')) { 
-    $links = $paragraph->get('field_section_link')->getValue();
-    if(!empty($links)) {
-      foreach($links as $id=>$link) {
-        $variables['section_link'][$id]['link_url'] = Url::fromUri($link['uri']);
-        $variables['section_link'][$id]['link_title'] = $link['title'];
-        $variables['section_link'][$id]['link_class'] = $link['options']['attributes']['class'];
-      }
-    }
-  }
-  if ($paragraph->hasfield('field_link')) {
-    $link = $paragraph->get('field_link')->getValue();
-    if(!empty($link)) {
-      $variables['paragraph_link'] = Url::fromUri($link[0]['uri']);
-      $variables['paragraph_link_title'] = $link[0]['title'];
-      $variables['paragraph_link_class'] = $link[0]['options']['attributes']['class'];
-    }
-  }
-  if (isset($paragraph->field_background_image[0])) {
-    if (!empty($paragraph->field_background_image->getValue()[0])) {
-      $background_image = $paragraph->field_background_image->getValue()[0];
-      if (isset($background_image) && $background_image > 0) {
-        $media = Media::load($background_image['target_id']);
-        $media_field = $media->get('field_media_image')->first()->getValue(); 
-        $alt = $media_field['alt'];
-        $file =  File::load($media_field['target_id']);
-        if ($file) {
-          $uri = $file->getFileUri();
-          $url = \Drupal::service('file_url_generator')->generateString($uri);
-          $variables['background_image_uri'] = $uri;
-          $variables['background_image_alt'] = $alt;
-        }
-      }
-    }
-  }
-  if ($paragraph->hasfield('field_font_awesome_icon')) {
-    if (isset($paragraph->field_font_awesome_icon[0])) {
-      $variables['fa_icon'] = $paragraph->get('field_font_awesome_icon')->getValue()[0]['icon_name'];
-      $variables['fa_style'] = $paragraph->get('field_font_awesome_icon')->getValue()[0]['style'];
-    }
-  } 
-  //Hero fields
-  if ($bundle === 'hero' ) {
 
-    if ($paragraph->hasfield('field_h1_title')) {
+  // field_image (Media reference).
+  if ($paragraph->hasField('field_image') && !$paragraph->get('field_image')->isEmpty()) {
+    $image_ref = $paragraph->get('field_image')->first();
+    $target_id = $image_ref->get('target_id')->getString();
+    if ($target_id) {
+      $media = Media::load($target_id);
+      if ($media && $media->hasField('field_media_image') && !$media->get('field_media_image')->isEmpty()) {
+        $image_item = $media->get('field_media_image')->first();
+        $alt = $image_item->get('alt')->getString();
+        $file_id = $image_item->get('target_id')->getString();
+        if ($file_id && ($file = File::load($file_id))) {
+          $variables['image_uri'] = $file->getFileUri();
+          $variables['image_alt'] = $alt;
+        }
+      }
+    }
+  }
+
+  // field_section_text (formatted).
+  if ($paragraph->hasField('field_section_text') && !$paragraph->get('field_section_text')->isEmpty()) {
+    $item = $paragraph->get('field_section_text')->first();
+    $value = $item->get('value')->getString();
+    $format = $item->get('format')->getString();
+    if ($value !== '') {
+      $variables['section_text'] = [
+        '#type' => 'processed_text',
+        '#text' => $value,
+        '#format' => $format,
+      ];
+    }
+  }
+
+  // field_text (may be plain or formatted text; original code didn’t set format).
+  if ($paragraph->hasField('field_text') && !$paragraph->get('field_text')->isEmpty()) {
+    $item = $paragraph->get('field_text')->first();
+    $value = $item->get('value')->getString();
+    if ($value !== '') {
+      $variables['text'] = [
+        '#type' => 'processed_text',
+        '#text' => $value,
+        // If there's a format field on this text, use it; otherwise fallback.
+        '#format' => method_exists($item, 'get') && $item->get('format') ? $item->get('format')->getString() : 'basic_html',
+      ];
+    }
+  }
+
+  // field_section_link (Link field with multiple values).
+  if ($paragraph->hasField('field_section_link') && !$paragraph->get('field_section_link')->isEmpty()) {
+    foreach ($paragraph->get('field_section_link') as $delta => $link_item) {
+      $uri = $link_item->get('uri')->getString();
+      if ($uri !== '') {
+        $variables['section_link'][$delta]['link_url'] = Url::fromUri($uri, $link_item->get('options')->getValue() ?: []);
+        $variables['section_link'][$delta]['link_title'] = $link_item->get('title')->getString();
+        $options = $link_item->get('options')->getValue();
+        $variables['section_link'][$delta]['link_class'] = $options['attributes']['class'] ?? '';
+      }
+    }
+  }
+
+  // field_link (single link).
+  if ($paragraph->hasField('field_link') && !$paragraph->get('field_link')->isEmpty()) {
+    $link_item = $paragraph->get('field_link')->first();
+    $uri = $link_item->get('uri')->getString();
+    if ($uri !== '') {
+      $variables['paragraph_link'] = Url::fromUri($uri, $link_item->get('options')->getValue() ?: []);
+      $variables['paragraph_link_title'] = $link_item->get('title')->getString();
+      $options = $link_item->get('options')->getValue();
+      $variables['paragraph_link_class'] = $options['attributes']['class'] ?? '';
+    }
+  }
+
+  // field_background_image (Media reference).
+  if ($paragraph->hasField('field_background_image') && !$paragraph->get('field_background_image')->isEmpty()) {
+    $ref = $paragraph->get('field_background_image')->first();
+    $mid = $ref->get('target_id')->getString();
+    if ($mid && ($media = Media::load($mid)) && $media->hasField('field_media_image') && !$media->get('field_media_image')->isEmpty()) {
+      $image_item = $media->get('field_media_image')->first();
+      $alt = $image_item->get('alt')->getString();
+      $fid = $image_item->get('target_id')->getString();
+      if ($fid && ($file = File::load($fid))) {
+        $variables['background_image_uri'] = $file->getFileUri();
+        $variables['background_image_alt'] = $alt;
+      }
+    }
+  }
+
+  // field_font_awesome_icon (custom field with icon_name/style).
+  if ($paragraph->hasField('field_font_awesome_icon') && !$paragraph->get('field_font_awesome_icon')->isEmpty()) {
+    $icon_item = $paragraph->get('field_font_awesome_icon')->first();
+    $variables['fa_icon'] = $icon_item->get('icon_name')->getString();
+    $variables['fa_style'] = $icon_item->get('style')->getString();
+  }
+
+  // ---- Bundle-specific wiring ----
+
+  // Hero.
+  if ($bundle === 'hero') {
+    if ($paragraph->hasField('field_h1_title') && !$paragraph->get('field_h1_title')->isEmpty()) {
       $variables['h1_title'] = $paragraph->get('field_h1_title')->value;
     }
-    if ($paragraph->hasfield('field_h1_second_line')) {
+    if ($paragraph->hasField('field_h1_second_line') && !$paragraph->get('field_h1_second_line')->isEmpty()) {
       $variables['h1_second_line'] = $paragraph->get('field_h1_second_line')->value;
     }
-    if ($paragraph->hasfield('field_hero_centered')) {
+    if ($paragraph->hasField('field_hero_centered') && !$paragraph->get('field_hero_centered')->isEmpty()) {
       $variables['hero_centered'] = $paragraph->get('field_hero_centered')->value;
     }
-    if ($paragraph->hasfield('field_centered_buttons')) {
+    if ($paragraph->hasField('field_centered_buttons') && !$paragraph->get('field_centered_buttons')->isEmpty()) {
       $variables['centered_buttons'] = $paragraph->get('field_centered_buttons')->value;
     }
-    if ($paragraph->hasfield('field_hero_link_subtext')) {
+    if ($paragraph->hasField('field_hero_link_subtext') && !$paragraph->get('field_hero_link_subtext')->isEmpty()) {
       $variables['hero_link_subtext'] = $paragraph->get('field_hero_link_subtext')->value;
     }
-    if ($paragraph->hasfield('field_hero_image_caption')) {
+    if ($paragraph->hasField('field_hero_image_caption') && !$paragraph->get('field_hero_image_caption')->isEmpty()) {
       $variables['hero_image_caption'] = $paragraph->get('field_hero_image_caption')->value;
     }
-    if ($paragraph->hasfield('field_hero_image_position')) {
+    if ($paragraph->hasField('field_hero_image_position') && !$paragraph->get('field_hero_image_position')->isEmpty()) {
       $variables['hero_image_position'] = $paragraph->get('field_hero_image_position')->value;
     }
-    if ($paragraph->hasfield('field_hero_bottom_message')) {
+    if ($paragraph->hasField('field_hero_bottom_message') && !$paragraph->get('field_hero_bottom_message')->isEmpty()) {
       $variables['hero_bottom_message'] = $paragraph->get('field_hero_bottom_message')->value;
     }
-    if ($paragraph->hasfield('field_hero_bottom_message_link')) { 
-      $links = $paragraph->get('field_hero_bottom_message_link')->getValue();
-      if(!empty($links)) {
-        foreach($links as $id=>$link) {
-          $variables['hero_bottom_link'][$id]['link_url'] = Url::fromUri($link['uri']);
-          $variables['hero_bottom_link'][$id]['link_title'] = $link['title'];
+
+    // field_hero_bottom_message_link (multi link).
+    if ($paragraph->hasField('field_hero_bottom_message_link') && !$paragraph->get('field_hero_bottom_message_link')->isEmpty()) {
+      foreach ($paragraph->get('field_hero_bottom_message_link') as $delta => $link_item) {
+        $uri = $link_item->get('uri')->getString();
+        if ($uri !== '') {
+          $variables['hero_bottom_link'][$delta]['link_url'] = Url::fromUri($uri, $link_item->get('options')->getValue() ?: []);
+          $variables['hero_bottom_link'][$delta]['link_title'] = $link_item->get('title')->getString();
         }
       }
     }
-    if ($paragraph->hasfield('field_hero_image')) {
-      if (isset($paragraph->field_hero_image->getValue()[0])) {
-        $hero_image = $paragraph->field_hero_image->getValue()[0];
-        if (isset($hero_image) && $hero_image > 0) {
-          $media = Media::load($hero_image['target_id']);
-          $media_field = $media->get('field_media_image')->first()->getValue(); 
-          $alt = $media_field['alt'];
-          $file =  File::load($media_field['target_id']);
-          if ($file) {
-            $uri = $file->getFileUri();
-            $url = \Drupal::service('file_url_generator')->generateString($uri);
-            $variables['hero_image_uri'] = $uri;
-            $variables['hero_image_alt'] = $alt;
-          }
+
+    // field_hero_image (Media image).
+    if ($paragraph->hasField('field_hero_image') && !$paragraph->get('field_hero_image')->isEmpty()) {
+      $ref = $paragraph->get('field_hero_image')->first();
+      $mid = $ref->get('target_id')->getString();
+      if ($mid && ($media = Media::load($mid)) && $media->hasField('field_media_image') && !$media->get('field_media_image')->isEmpty()) {
+        $image_item = $media->get('field_media_image')->first();
+        $alt = $image_item->get('alt')->getString();
+        $fid = $image_item->get('target_id')->getString();
+        if ($fid && ($file = File::load($fid))) {
+          $variables['hero_image_uri'] = $file->getFileUri();
+          $variables['hero_image_alt'] = $alt;
         }
       }
     }
-    if ($paragraph->hasfield('field_hero_background_image')) {
-      if (isset($paragraph->field_hero_background_image->getValue()[0])) {
-        $hero_background_image = $paragraph->field_hero_background_image->getValue()[0];
-        if (isset($hero_background_image) && $hero_background_image > 0) {
-          $media = Media::load($hero_background_image['target_id']);
-          $media_field = $media->get('field_media_image')->first()->getValue(); 
-          $alt = $media_field['alt'];
-          $file =  File::load($media_field['target_id']);
-          if ($file) {
-            $uri = $file->getFileUri();
-            $url = \Drupal::service('file_url_generator')->generateString($uri);
-            $variables['hero_background_image_uri'] = $uri;
-            $variables['hero_background_image_alt'] = $alt;
-          }
+
+    // field_hero_background_image (Media image).
+    if ($paragraph->hasField('field_hero_background_image') && !$paragraph->get('field_hero_background_image')->isEmpty()) {
+      $ref = $paragraph->get('field_hero_background_image')->first();
+      $mid = $ref->get('target_id')->getString();
+      if ($mid && ($media = Media::load($mid)) && $media->hasField('field_media_image') && !$media->get('field_media_image')->isEmpty()) {
+        $image_item = $media->get('field_media_image')->first();
+        $alt = $image_item->get('alt')->getString();
+        $fid = $image_item->get('target_id')->getString();
+        if ($fid && ($file = File::load($fid))) {
+          $variables['hero_background_image_uri'] = $file->getFileUri();
+          $variables['hero_background_image_alt'] = $alt;
         }
       }
     }
-    if ($paragraph->hasfield('field_hero_background_image_mobi')) {
-      if (isset($paragraph->field_hero_background_image_mobi->getValue()[0])) {
-        $hero_background_image_mobile = $paragraph->field_hero_background_image_mobi->getValue()[0];
-        if (isset($hero_background_image_mobile) && $hero_background_image_mobile > 0) {
-          $media = Media::load($hero_background_image_mobile['target_id']);
-          if (!empty($media)) {
-            $media_field = $media->get('field_media_image')->first()->getValue(); 
-            $alt = $media_field['alt'];
-            $file =  File::load($media_field['target_id']);
-            if ($file) {
-              $uri = $file->getFileUri();
-              $url = \Drupal::service('file_url_generator')->generateString($uri);
-              $variables['hero_background_image_mobile_uri'] = $uri;
-              $variables['hero_background_image_mobile_alt'] = $alt;
-            }
-          }
+
+    // field_hero_background_image_mobi (Media image).
+    if ($paragraph->hasField('field_hero_background_image_mobi') && !$paragraph->get('field_hero_background_image_mobi')->isEmpty()) {
+      $ref = $paragraph->get('field_hero_background_image_mobi')->first();
+      $mid = $ref->get('target_id')->getString();
+      if ($mid && ($media = Media::load($mid)) && $media->hasField('field_media_image') && !$media->get('field_media_image')->isEmpty()) {
+        $image_item = $media->get('field_media_image')->first();
+        $alt = $image_item->get('alt')->getString();
+        $fid = $image_item->get('target_id')->getString();
+        if ($fid && ($file = File::load($fid))) {
+          $variables['hero_background_image_mobile_uri'] = $file->getFileUri();
+          $variables['hero_background_image_mobile_alt'] = $alt;
         }
       }
     }
-    if ($paragraph->hasfield('field_hero_body')) {
-      if (!empty($paragraph->field_hero_body->getValue()[0]['value'])) {
-        $variables['hero_body'] = [     
-          '#type' => 'processed_text',     
-          '#text' => $paragraph->field_hero_body->getValue()[0]['value'],     
-          '#format' => $paragraph->field_hero_body->getValue()[0]['format']   
+
+    // field_hero_body (formatted).
+    if ($paragraph->hasField('field_hero_body') && !$paragraph->get('field_hero_body')->isEmpty()) {
+      $item = $paragraph->get('field_hero_body')->first();
+      $value = $item->get('value')->getString();
+      $format = $item->get('format')->getString();
+      if ($value !== '') {
+        $variables['hero_body'] = [
+          '#type' => 'processed_text',
+          '#text' => $value,
+          '#format' => $format,
         ];
       }
     }
-    if ($paragraph->hasfield('field_hero_links')) { 
-      $links = $paragraph->get('field_hero_links')->getValue();
-      if(!empty($links)) {
-        foreach($links as $id=>$link) {
-          $variables['hero_link'][$id]['link_url'] = Url::fromUri($link['uri']);
-          $variables['hero_link'][$id]['link_title'] = $link['title'];
-          $variables['hero_link'][$id]['link_class'] = $link['options']['attributes']['class'];
+
+    // field_hero_links (multi link).
+    if ($paragraph->hasField('field_hero_links') && !$paragraph->get('field_hero_links')->isEmpty()) {
+      foreach ($paragraph->get('field_hero_links') as $delta => $link_item) {
+        $uri = $link_item->get('uri')->getString();
+        if ($uri !== '') {
+          $variables['hero_link'][$delta]['link_url'] = Url::fromUri($uri, $link_item->get('options')->getValue() ?: []);
+          $variables['hero_link'][$delta]['link_title'] = $link_item->get('title')->getString();
+          $options = $link_item->get('options')->getValue();
+          $variables['hero_link'][$delta]['link_class'] = $options['attributes']['class'] ?? '';
         }
       }
     }
-    if ($paragraph->hasfield('field_hero_text_color')) {
-      $variables['hero_text_color'] = $paragraph->get('field_hero_text_color')->getValue()[0]['value'];
+
+    if ($paragraph->hasField('field_hero_text_color') && !$paragraph->get('field_hero_text_color')->isEmpty()) {
+      $variables['hero_text_color'] = $paragraph->get('field_hero_text_color')->value;
     }
-    if ($paragraph->hasfield('field_hero_background_color')) {
-      $variables['hero_background_color'] = $paragraph->get('field_hero_background_color')->getValue()[0]['value'];
-    }
-  }
-  if ($bundle === 'four_columns' ) {
-    if ($paragraph->hasfield('field_stacking')) {
-      $variables['stacking'] = $paragraph->get('field_stacking')->getValue()[0]['value'];
+    if ($paragraph->hasField('field_hero_background_color') && !$paragraph->get('field_hero_background_color')->isEmpty()) {
+      $variables['hero_background_color'] = $paragraph->get('field_hero_background_color')->value;
     }
   }
-  if ($bundle === 'image_text_with_link' ) {
-    if ($paragraph->hasfield('field_icon_background_color')) {
-      if (isset($paragraph->field_icon_background_color->getValue()[0])) {
-        $variables['icon_background_color'] = $paragraph->get('field_icon_background_color')->getValue()[0]['value'];
-      }
-    }
+
+  // Four columns.
+  if ($bundle === 'four_columns' && $paragraph->hasField('field_stacking') && !$paragraph->get('field_stacking')->isEmpty()) {
+    $variables['stacking'] = $paragraph->get('field_stacking')->value;
   }
-  if ($bundle === 'pull_quote' ) {
-    if ($paragraph->hasfield('field_quote')) {
-      if (!empty($paragraph->field_quote->getValue()[0]['value'])) {
-        $variables['quote'] = [     
-          '#type' => 'processed_text',     
-          '#text' => $paragraph->field_quote->getValue()[0]['value'],     
-          '#format' => $paragraph->field_quote->getValue()[0]['format']   
+
+  // Image + text with link.
+  if ($bundle === 'image_text_with_link' && $paragraph->hasField('field_icon_background_color') && !$paragraph->get('field_icon_background_color')->isEmpty()) {
+    $variables['icon_background_color'] = $paragraph->get('field_icon_background_color')->value;
+  }
+
+  // Pull quote.
+  if ($bundle === 'pull_quote') {
+    if ($paragraph->hasField('field_quote') && !$paragraph->get('field_quote')->isEmpty()) {
+      $item = $paragraph->get('field_quote')->first();
+      $value = $item->get('value')->getString();
+      $format = $item->get('format')->getString();
+      if ($value !== '') {
+        $variables['quote'] = [
+          '#type' => 'processed_text',
+          '#text' => $value,
+          '#format' => $format,
         ];
       }
     }
-    if ($paragraph->hasfield('field_attribution')) {
-      $variables['attribution'] = $paragraph->get('field_attribution')->getValue()[0]['value'];
+    if ($paragraph->hasField('field_attribution') && !$paragraph->get('field_attribution')->isEmpty()) {
+      $variables['attribution'] = $paragraph->get('field_attribution')->value;
     }
-    if ($paragraph->hasfield('field_justification')) {
-      $variables['justification'] = $paragraph->get('field_justification')->getValue()[0]['value'];
+    if ($paragraph->hasField('field_justification') && !$paragraph->get('field_justification')->isEmpty()) {
+      $variables['justification'] = $paragraph->get('field_justification')->value;
     }
   }
 }
 
-
-
-
-
-function nighthawk_base_theme_form_alter(&$form, &$form_state, $form_id) {
-  if ($form_id == 'search_block_form') {
-    $form['keys']['#attributes']['placeholder'] = t('Search');
+/**
+ * Implements hook_form_alter().
+ */
+function nighthawk_base_theme_form_alter(array &$form, array &$form_state, $form_id): void {
+  if ($form_id === 'search_block_form' && isset($form['keys']['#attributes'])) {
+    $form['keys']['#attributes']['placeholder'] = (string) new TranslatableMarkup('Search');
   }
 }
