@@ -2,7 +2,7 @@ name: Nighthawk Base Theme
 type: theme
 description: 'SASS starter kit for a Bootstrap Barrio SubTheme.'
 # version: VERSION
-core_version_requirement: ^9 || ^10
+core_version_requirement: ^9 || ^10 || ^11
 base theme: bootstrap_barrio
 
 libraries:
