@@ -1,93 +1,128 @@
-let gulp = require('gulp'),
-  sass = require('gulp-sass')(require('sass')),
-  sourcemaps = require('gulp-sourcemaps'),
-  $ = require('gulp-load-plugins')(),
-  cleanCss = require('gulp-clean-css'),
-  rename = require('gulp-rename'),
-  postcss = require('gulp-postcss'),
-  autoprefixer = require('autoprefixer'),
-  sassGlob = require('gulp-sass-glob');
-  postcssInlineSvg = require('postcss-inline-svg'),
-  browserSync = require('browser-sync').create(),
-  pxtorem = require('postcss-pxtorem'),
-  postcssProcessors = [
-    postcssInlineSvg({
-      removeFill: true,
-      paths: ['./node_modules/bootstrap-icons/icons']
-    }),
-    pxtorem({
-      propList: ['font', 'font-size', 'line-height', 'letter-spacing', '*margin*', '*padding*'],
-      mediaQuery: true
-    })
-  ];
+'use strict';
+
+const { src, dest, series, parallel, watch } = require('gulp');
+const gulpSass = require('gulp-sass');
+const dartSass = require('sass');
+const sourcemaps = require('gulp-sourcemaps');
+const cleanCss = require('gulp-clean-css');
+const rename = require('gulp-rename');
+const postcss = require('gulp-postcss');
+const autoprefixer = require('autoprefixer');
+const sassGlob = require('gulp-sass-glob');
+const postcssInlineSvg = require('postcss-inline-svg');
+const browserSync = require('browser-sync').create();
+const pxtorem = require('postcss-pxtorem');
+
+const sass = gulpSass(dartSass);
 
 const paths = {
   scss: {
     src: './scss/style.scss',
-    dest: './css',
-    watch: './scss/**/*.scss',
     bootstrap: './node_modules/bootstrap/scss/bootstrap.scss',
+    watch: './scss/**/*.scss',
+    dest: './css',
   },
   js: {
     bootstrap: './node_modules/bootstrap/dist/js/bootstrap.min.js',
     popper: './node_modules/@popperjs/core/dist/umd/popper.min.js',
     barrio: '../../contrib/bootstrap_barrio/js/barrio.js',
-    dest: './js'
-  }
-}
+    dest: './js',
+  },
+};
 
-// Compile sass into CSS & auto-inject into browsers
-function styles () {
-  return gulp.src([paths.scss.bootstrap, paths.scss.src])
+const postcssProcessors = [
+  postcssInlineSvg({
+    removeFill: true,
+    paths: ['./node_modules/bootstrap-icons/icons'],
+  }),
+
+  pxtorem({
+    propList: [
+      'font',
+      'font-size',
+      'line-height',
+      'letter-spacing',
+      '*margin*',
+      '*padding*',
+    ],
+    mediaQuery: true,
+  }),
+
+  autoprefixer(),
+];
+
+// Compile Sass into CSS, create sourcemaps, minify, and inject changes.
+function styles() {
+  return src([paths.scss.bootstrap, paths.scss.src])
     .pipe(sassGlob())
     .pipe(sourcemaps.init())
-    .pipe(sass({
-      includePaths: [
-        './node_modules/bootstrap/scss',
-        '../../contrib/bootstrap_barrio/scss'
-      ]
-    }).on('error', sass.logError))
-    .pipe($.postcss(postcssProcessors))
-    .pipe(postcss([autoprefixer({
-      browsers: [
-        'Chrome >= 35',
-        'Firefox >= 38',
-        'Edge >= 12',
-        'Explorer >= 10',
-        'iOS >= 8',
-        'Safari >= 8',
-        'Android 2.3',
-        'Android >= 4',
-        'Opera >= 12']
-    })]))
-    .pipe(sourcemaps.write())
-    .pipe(gulp.dest(paths.scss.dest))
+    .pipe(
+      sass({
+        includePaths: [
+          './node_modules/bootstrap/scss',
+          '../../contrib/bootstrap_barrio/scss',
+        ],
+        silenceDeprecations: ['legacy-js-api'],
+      }).on('error', sass.logError)
+    )
+    .pipe(postcss(postcssProcessors))
+    .pipe(dest(paths.scss.dest))
     .pipe(cleanCss())
     .pipe(rename({ suffix: '.min' }))
-    .pipe(gulp.dest(paths.scss.dest))
-    .pipe(browserSync.stream())
+    .pipe(sourcemaps.write('.'))
+    .pipe(dest(paths.scss.dest))
+    .pipe(browserSync.stream());
 }
 
-// Move the javascript files into our js folder
-function js () {
-  return gulp.src([paths.js.bootstrap, paths.js.popper, paths.js.barrio])
-    .pipe(gulp.dest(paths.js.dest))
-    .pipe(browserSync.stream())
+// Copy JavaScript dependencies into the theme js folder.
+function scripts() {
+  return src([
+    paths.js.popper,
+    paths.js.bootstrap,
+    paths.js.barrio,
+  ])
+    .pipe(dest(paths.js.dest))
+    .pipe(browserSync.stream());
 }
 
-// Static Server + watching scss/html files
-function serve () {
+// Start BrowserSync.
+function serve(done) {
   browserSync.init({
     proxy: 'https://nighthawk_base.lndo.site',
-  })
+    open: false,
+    notify: false,
+  });
 
-  gulp.watch([paths.scss.watch, paths.scss.bootstrap], styles).on('change', browserSync.reload)
+  done();
 }
 
-const build = gulp.series(styles, gulp.parallel(js, serve))
+// Reload BrowserSync manually when needed.
+function reload(done) {
+  browserSync.reload();
+  done();
+}
 
-exports.styles = styles
-exports.js = js
-exports.serve = serve
+// Watch files for changes.
+function watcher() {
+  watch([paths.scss.watch, paths.scss.bootstrap], styles);
+  watch(
+    [paths.js.bootstrap, paths.js.popper, paths.js.barrio],
+    series(scripts, reload)
+  );
+}
 
-exports.default = build
+// Build once and exit.
+const build = parallel(styles, scripts);
+
+// Build, serve, and keep watching.
+const dev = series(build, serve, watcher);
+
+exports.styles = styles;
+exports.js = scripts;
+exports.scripts = scripts;
+exports.build = build;
+exports.serve = dev;
+exports.watch = dev;
+
+// Plain `gulp` now compiles, starts BrowserSync, and keeps listening.
+exports.default = dev;
