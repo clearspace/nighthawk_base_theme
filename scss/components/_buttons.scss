@@ -4,12 +4,11 @@
 	font-style: 1rem;
 	font-weight: $font-bold;
 	color: $white;
-	border-radius: .75rem;
 	display: inline-flex;
 	justify-content: center;
 	align-items: center;
 	padding: 1rem 2rem;
-	background: $black;
+	background: $mn-blue;
 	border: 2px solid $mn-blue;
  	@include media-breakpoint-up(md) {
 	}

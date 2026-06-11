@@ -1,0 +1,36 @@
+.user-profile-page {
+  margin-top: 4rem;
+  margin-bottom: 4rem;
+  .container {
+    .row {
+      .col-12 {
+        h1.user-profile-page__title {
+          text-transform: capitalize;
+          margin-bottom: 2rem;
+        }
+
+        .user-profile-page__username {
+          margin-bottom: .5rem;
+          strong {
+          }
+        }
+
+        .user-profile-page__account-links {
+          margin-bottom: 2rem;
+          a {
+          }
+
+          .user-profile-page__separator {
+          }
+        }
+
+        .user-profile-page__actions {
+          display: flex;
+          a.user-profile-page__action {
+            margin-right: .5rem;
+          }
+        }
+      }
+    }
+  }
+}

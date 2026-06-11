@@ -1,0 +1,94 @@
+.login-form-wrapper,
+.password-reset-form-wrapper {
+  .container {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    .row {
+      .col-12 {
+        #user-login-form,
+        #user-pass {
+          border: none;
+          max-width: 615px;
+          .login-title {
+            background: none;
+            border: none;
+            box-shadow: none;
+            text-align: left;
+            color: $black;
+            font-size: 6.5rem;
+            font-weight: $font-bold;
+          }
+          p {
+            margin-left: 0;
+            font-size: 1.4rem;
+          }
+          .js-form-item {
+            &.form-item-name,
+            &.form-item-pass {
+              label {
+                font-size: 1.8rem;
+                text-transform: uppercase;
+                &:after {
+                  content: "*";
+                  color: $red;
+                }
+              }
+            }
+            .form-control {
+              font-size: 2rem;
+              line-height: 1.6;
+              min-height: 48px;
+              border-radius: 0;
+            }
+            &.form-item-pass {
+              label {
+                display: flex;
+                justify-content: space-between;
+                &:after {
+                  display: none;
+                }
+                span.password {
+                  &:after {
+                    content: "*";
+                    color: $red;
+
+                    vertical-align: super;
+                    display: inline-block;
+                    background-repeat: no-repeat;
+                    background-size: 7px 7px;
+                    width: 7px;
+                    height: 7px;
+                    margin: 0 0.3em;
+                  }
+                }
+                span.forgot-password {
+                  text-transform: none;
+                }
+              }
+            }
+          }
+
+          #capslockdiv {
+            height: 0;
+            p {
+            }
+          }
+
+          .form-actions {
+            margin: 0;
+            .form-submit {
+              border-radius: 0;
+              font-size: 2rem;
+            }
+          }
+
+          .actions-suffix {
+            a {
+              bottom: 33px;
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -16,8 +16,51 @@
  * @see template_preprocess_user()
  */
 #}
-<article{{ attributes.addClass('profile') }}>
-  {% if content %}
-    {{- content -}}
-  {% endif %}
+{#
+/**
+ * @file
+ * Custom user profile template.
+ */
+#}
+
+<article{{ attributes.addClass('user-profile-page') }}>
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+
+        <h1 class="user-profile-page__title">
+          {{ profile_display_name }}
+        </h1>
+
+        <div class="user-profile-page__username">
+          <strong>{{ 'Username:'|t }}</strong> {{ profile_username }}
+        </div>
+
+        <div class="user-profile-page__account-links">
+          {% if profile_edit_url %}
+            <a href="{{ profile_edit_url }}">{{ 'Edit Profile'|t }}</a>
+          {% endif %}
+
+          {% if profile_edit_url and profile_logout_url %}
+            <span class="user-profile-page__separator">|</span>
+          {% endif %}
+
+          {% if profile_logout_url %}
+            <a href="{{ profile_logout_url }}">{{ 'Logout'|t }}</a>
+          {% endif %}
+        </div>
+
+        {% if profile_action_links %}
+          <div class="user-profile-page__actions">
+            {% for item in profile_action_links %}
+              <a href="{{ item.url }}" class="button user-profile-page__action">
+                {{ item.title }}
+              </a>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
 </article>

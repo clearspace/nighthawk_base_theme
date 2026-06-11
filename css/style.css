@@ -14749,12 +14749,11 @@ ol.breadcrumb li.breadcrumb-item a {
   font-style: 1rem;
   font-weight: 700;
   color: #ffffff;
-  border-radius: 0.75rem;
   display: inline-flex;
   justify-content: center;
   align-items: center;
   padding: 1rem 2rem;
-  background: #000000;
+  background: #003865;
   border: 2px solid #003865;
 }
 .button:after {
@@ -15484,6 +15483,27 @@ a.button.blue {
   height: clamp(150px, 48vw, 300px);
 }
 
+.user-profile-page {
+  margin-top: 4rem;
+  margin-bottom: 4rem;
+}
+.user-profile-page .container .row .col-12 h1.user-profile-page__title, .user-profile-page .container .row .col-12 .user-profile-page__title.h1 {
+  text-transform: capitalize;
+  margin-bottom: 2rem;
+}
+.user-profile-page .container .row .col-12 .user-profile-page__username {
+  margin-bottom: 0.5rem;
+}
+.user-profile-page .container .row .col-12 .user-profile-page__account-links {
+  margin-bottom: 2rem;
+}
+.user-profile-page .container .row .col-12 .user-profile-page__actions {
+  display: flex;
+}
+.user-profile-page .container .row .col-12 .user-profile-page__actions a.user-profile-page__action {
+  margin-right: 0.5rem;
+}
+
 .node .node__content {
   font-size: 1.8rem;
 }
@@ -15673,4 +15693,122 @@ a.button.blue {
 }
 .two-columns h2, .two-columns .h2 {
   text-align: center;
+}
+.login-form-wrapper .container,
+.password-reset-form-wrapper .container {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+.login-form-wrapper .container .row .col-12 #user-login-form,
+.login-form-wrapper .container .row .col-12 #user-pass,
+.password-reset-form-wrapper .container .row .col-12 #user-login-form,
+.password-reset-form-wrapper .container .row .col-12 #user-pass {
+  border: none;
+  max-width: 615px;
+}
+.login-form-wrapper .container .row .col-12 #user-login-form .login-title,
+.login-form-wrapper .container .row .col-12 #user-pass .login-title,
+.password-reset-form-wrapper .container .row .col-12 #user-login-form .login-title,
+.password-reset-form-wrapper .container .row .col-12 #user-pass .login-title {
+  background: none;
+  border: none;
+  box-shadow: none;
+  text-align: left;
+  color: #000000;
+  font-size: 6.5rem;
+  font-weight: 700;
+}
+.login-form-wrapper .container .row .col-12 #user-login-form p,
+.login-form-wrapper .container .row .col-12 #user-pass p,
+.password-reset-form-wrapper .container .row .col-12 #user-login-form p,
+.password-reset-form-wrapper .container .row .col-12 #user-pass p {
+  margin-left: 0;
+  font-size: 1.4rem;
+}
+.login-form-wrapper .container .row .col-12 #user-login-form .js-form-item.form-item-name label, .login-form-wrapper .container .row .col-12 #user-login-form .js-form-item.form-item-pass label,
+.login-form-wrapper .container .row .col-12 #user-pass .js-form-item.form-item-name label,
+.login-form-wrapper .container .row .col-12 #user-pass .js-form-item.form-item-pass label,
+.password-reset-form-wrapper .container .row .col-12 #user-login-form .js-form-item.form-item-name label,
+.password-reset-form-wrapper .container .row .col-12 #user-login-form .js-form-item.form-item-pass label,
+.password-reset-form-wrapper .container .row .col-12 #user-pass .js-form-item.form-item-name label,
+.password-reset-form-wrapper .container .row .col-12 #user-pass .js-form-item.form-item-pass label {
+  font-size: 1.8rem;
+  text-transform: uppercase;
+}
+.login-form-wrapper .container .row .col-12 #user-login-form .js-form-item.form-item-name label:after, .login-form-wrapper .container .row .col-12 #user-login-form .js-form-item.form-item-pass label:after,
+.login-form-wrapper .container .row .col-12 #user-pass .js-form-item.form-item-name label:after,
+.login-form-wrapper .container .row .col-12 #user-pass .js-form-item.form-item-pass label:after,
+.password-reset-form-wrapper .container .row .col-12 #user-login-form .js-form-item.form-item-name label:after,
+.password-reset-form-wrapper .container .row .col-12 #user-login-form .js-form-item.form-item-pass label:after,
+.password-reset-form-wrapper .container .row .col-12 #user-pass .js-form-item.form-item-name label:after,
+.password-reset-form-wrapper .container .row .col-12 #user-pass .js-form-item.form-item-pass label:after {
+  content: "*";
+  color: #dc3545;
+}
+.login-form-wrapper .container .row .col-12 #user-login-form .js-form-item .form-control,
+.login-form-wrapper .container .row .col-12 #user-pass .js-form-item .form-control,
+.password-reset-form-wrapper .container .row .col-12 #user-login-form .js-form-item .form-control,
+.password-reset-form-wrapper .container .row .col-12 #user-pass .js-form-item .form-control {
+  font-size: 2rem;
+  line-height: 1.6;
+  min-height: 48px;
+  border-radius: 0;
+}
+.login-form-wrapper .container .row .col-12 #user-login-form .js-form-item.form-item-pass label,
+.login-form-wrapper .container .row .col-12 #user-pass .js-form-item.form-item-pass label,
+.password-reset-form-wrapper .container .row .col-12 #user-login-form .js-form-item.form-item-pass label,
+.password-reset-form-wrapper .container .row .col-12 #user-pass .js-form-item.form-item-pass label {
+  display: flex;
+  justify-content: space-between;
+}
+.login-form-wrapper .container .row .col-12 #user-login-form .js-form-item.form-item-pass label:after,
+.login-form-wrapper .container .row .col-12 #user-pass .js-form-item.form-item-pass label:after,
+.password-reset-form-wrapper .container .row .col-12 #user-login-form .js-form-item.form-item-pass label:after,
+.password-reset-form-wrapper .container .row .col-12 #user-pass .js-form-item.form-item-pass label:after {
+  display: none;
+}
+.login-form-wrapper .container .row .col-12 #user-login-form .js-form-item.form-item-pass label span.password:after,
+.login-form-wrapper .container .row .col-12 #user-pass .js-form-item.form-item-pass label span.password:after,
+.password-reset-form-wrapper .container .row .col-12 #user-login-form .js-form-item.form-item-pass label span.password:after,
+.password-reset-form-wrapper .container .row .col-12 #user-pass .js-form-item.form-item-pass label span.password:after {
+  content: "*";
+  color: #dc3545;
+  vertical-align: super;
+  display: inline-block;
+  background-repeat: no-repeat;
+  background-size: 7px 7px;
+  width: 7px;
+  height: 7px;
+  margin: 0 0.3em;
+}
+.login-form-wrapper .container .row .col-12 #user-login-form .js-form-item.form-item-pass label span.forgot-password,
+.login-form-wrapper .container .row .col-12 #user-pass .js-form-item.form-item-pass label span.forgot-password,
+.password-reset-form-wrapper .container .row .col-12 #user-login-form .js-form-item.form-item-pass label span.forgot-password,
+.password-reset-form-wrapper .container .row .col-12 #user-pass .js-form-item.form-item-pass label span.forgot-password {
+  text-transform: none;
+}
+.login-form-wrapper .container .row .col-12 #user-login-form #capslockdiv,
+.login-form-wrapper .container .row .col-12 #user-pass #capslockdiv,
+.password-reset-form-wrapper .container .row .col-12 #user-login-form #capslockdiv,
+.password-reset-form-wrapper .container .row .col-12 #user-pass #capslockdiv {
+  height: 0;
+}
+.login-form-wrapper .container .row .col-12 #user-login-form .form-actions,
+.login-form-wrapper .container .row .col-12 #user-pass .form-actions,
+.password-reset-form-wrapper .container .row .col-12 #user-login-form .form-actions,
+.password-reset-form-wrapper .container .row .col-12 #user-pass .form-actions {
+  margin: 0;
+}
+.login-form-wrapper .container .row .col-12 #user-login-form .form-actions .form-submit,
+.login-form-wrapper .container .row .col-12 #user-pass .form-actions .form-submit,
+.password-reset-form-wrapper .container .row .col-12 #user-login-form .form-actions .form-submit,
+.password-reset-form-wrapper .container .row .col-12 #user-pass .form-actions .form-submit {
+  border-radius: 0;
+  font-size: 2rem;
+}
+.login-form-wrapper .container .row .col-12 #user-login-form .actions-suffix a,
+.login-form-wrapper .container .row .col-12 #user-pass .actions-suffix a,
+.password-reset-form-wrapper .container .row .col-12 #user-login-form .actions-suffix a,
+.password-reset-form-wrapper .container .row .col-12 #user-pass .actions-suffix a {
+  bottom: 33px;
 }

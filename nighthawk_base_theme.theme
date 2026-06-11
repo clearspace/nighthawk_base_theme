@@ -19,6 +19,7 @@ use Drupal\block_content\Entity\BlockContent;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\image\Entity\ImageStyle; 
+use Drupal\user\UserInterface;
 
 /**
  * Implements hook_form_system_theme_settings_alter() for settings form.
@@ -403,4 +404,172 @@ function nighthawk_base_theme_form_alter(&$form, &$form_state, $form_id) {
   if ($form_id == 'search_block_form') {
     $form['keys']['#attributes']['placeholder'] = t('Search');
   }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function nighthawk_base_theme_form_user_login_form_alter(array &$form, FormStateInterface $form_state, $form_id): void {
+  if (empty($form['pass'])) {
+    return;
+  }
+
+  $forgot_password_link = Link::fromTextAndUrl(
+    t('Reset your password'),
+    Url::fromRoute('user.pass')
+  )->toString();
+
+  // Put the reset-password link inside the password label.
+  $form['pass']['#title'] = Markup::create(
+    '<span class="password">Password</span> <span class="forgot-password">' . $forgot_password_link . '</span>'
+  );
+
+  // Remove Super Login's existing forgot-password output if it exists separately.
+  foreach ($form as $key => $value) {
+    if (!is_array($value)) {
+      continue;
+    }
+
+    $markup = '';
+
+    if (isset($value['#markup'])) {
+      $markup .= (string) $value['#markup'];
+    }
+
+    if (isset($value['#prefix'])) {
+      $markup .= (string) $value['#prefix'];
+    }
+
+    if (isset($value['#suffix'])) {
+      $markup .= (string) $value['#suffix'];
+    }
+
+    if (
+      str_contains($markup, 'forgot-password') ||
+      str_contains($markup, '/user/password')
+    ) {
+      unset($form[$key]);
+    }
+  }
+
+  // If Super Login placed it in the password field suffix, remove only that part.
+  if (!empty($form['pass']['#suffix'])) {
+    $form['pass']['#suffix'] = preg_replace(
+      '#<p class="forgot-password">.*?</p>#s',
+      '',
+      (string) $form['pass']['#suffix']
+    );
+  }
+}
+
+
+/**
+ * Implements hook_preprocess_user().
+ */
+function nighthawk_base_theme_preprocess_user(array &$variables): void {
+  $current_user = \Drupal::currentUser();
+
+  /** @var \Drupal\user\UserInterface|null $account */
+  $account = $variables['user'] ?? NULL;
+
+  if (!$account instanceof UserInterface) {
+    return;
+  }
+
+  /*
+   * Username.
+   */
+  $username = $account->getAccountName();
+
+  /*
+   * First / last name.
+   *
+   * Change these field machine names if your actual fields are different.
+   */
+  $first_name = '';
+  $last_name = '';
+
+  if ($account->hasField('field_first_name') && !$account->get('field_first_name')->isEmpty()) {
+    $first_name = trim((string) $account->get('field_first_name')->value);
+  }
+
+  if ($account->hasField('field_last_name') && !$account->get('field_last_name')->isEmpty()) {
+    $last_name = trim((string) $account->get('field_last_name')->value);
+  }
+
+  $full_name = trim($first_name . ' ' . $last_name);
+
+  $variables['profile_display_name'] = $full_name !== '' ? $full_name : $username;
+  $variables['profile_username'] = $username;
+
+  /*
+   * Edit Profile link.
+   *
+   * Shows only if the current user can update this user account.
+   */
+  $variables['profile_edit_url'] = NULL;
+
+  if ($account->access('update', $current_user)) {
+    $variables['profile_edit_url'] = Url::fromRoute('entity.user.edit_form', [
+      'user' => $account->id(),
+    ])->toString();
+  }
+
+  /*
+   * Logout link.
+   *
+   * Shows only to authenticated users.
+   */
+  $variables['profile_logout_url'] = NULL;
+
+  if ($current_user->isAuthenticated()) {
+    $variables['profile_logout_url'] = Url::fromRoute('user.logout')->toString();
+  }
+
+  /*
+   * Action buttons.
+   */
+  $links = [];
+
+  /*
+   * View Content.
+   *
+   * Route: system.admin_content
+   * Path: /admin/content
+   */
+  $view_content_url = Url::fromRoute('system.admin_content');
+
+  if ($view_content_url->access($current_user)) {
+    $links[] = [
+      'title' => t('View Content'),
+      'url' => $view_content_url->toString(),
+    ];
+  }
+
+  /*
+   * Add Content.
+   *
+   * Route: node.add_page
+   * Path: /node/add
+   */
+  $add_content_url = Url::fromRoute('node.add_page');
+
+  if ($add_content_url->access($current_user)) {
+    $links[] = [
+      'title' => t('+ Add Content'),
+      'url' => $add_content_url->toString(),
+    ];
+  }
+
+  /*
+   * Support Book.
+   *
+   * Always shown for now.
+   */
+  $links[] = [
+    'title' => t('Support Book'),
+    'url' => Url::fromUserInput('/support-book')->toString(),
+  ];
+
+  $variables['profile_action_links'] = $links;
 }

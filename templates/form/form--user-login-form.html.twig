@@ -1,0 +1,24 @@
+{#
+/**
+ * @file
+ * Theme override for a 'form' element.
+ *
+ * Available variables
+ * - attributes: A list of HTML attributes for the wrapper element.
+ * - children: The child elements of the form.
+ *
+ * @see template_preprocess_form()
+ */
+#}
+<div class="login-form-wrapper">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        {{ attach_library('bootstrap_barrio/form') }}
+        <form{{ attributes }}>
+          {{ children }}
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
